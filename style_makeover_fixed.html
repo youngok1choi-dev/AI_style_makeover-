@@ -8,44 +8,107 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#E8F0FC;min-height:100vh;}
   .page{display:none;min-height:100vh;}
-  .page.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+  .page.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;}
+  .page.active:not(#page-home){padding:24px;}
 
-  /* HOME */
-  .home-wrap{max-width:440px;width:100%;text-align:center;}
-  .logo-box{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#2A5EC8 0%,#6A3DB8 50%,#E8407A 100%);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 18px;box-shadow:0 8px 28px rgba(42,94,200,0.30);}
-  .brand{font-size:11px;letter-spacing:4px;font-weight:800;text-transform:uppercase;background:linear-gradient(90deg,#2A5EC8,#E8407A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
-  .home-title{color:#0A1E42;font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:8px;}
-  .home-sub{color:#3A5A88;font-size:14px;line-height:1.8;margin-bottom:32px;}
-  .card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
-  .mod-card{border:none;border-radius:18px;padding:20px 16px;text-align:left;cursor:pointer;transition:transform 0.18s,box-shadow 0.18s;color:#fff;}
-  .mod-card:hover{transform:translateY(-4px);}
-  .mod-card .icon{font-size:24px;margin-bottom:10px;display:block;}
-  .mod-card .ctitle{font-size:14px;font-weight:800;margin-bottom:4px;color:#fff;}
-  .mod-card .cdesc{font-size:11px;color:rgba(255,255,255,0.82);}
-  .c-blue   {background:linear-gradient(135deg,#2A5EC8,#4A80E8);box-shadow:0 6px 20px rgba(42,94,200,0.35);}
-  .c-cyan   {background:linear-gradient(135deg,#0A8CAA,#1AB8CC);box-shadow:0 6px 20px rgba(10,140,170,0.32);}
-  .c-steel  {background:linear-gradient(135deg,#1A5AA0,#2A80CC);box-shadow:0 6px 20px rgba(26,90,160,0.32);}
-  .c-gold   {background:linear-gradient(135deg,#B87800,#D8A010);box-shadow:0 6px 20px rgba(184,120,0,0.32);}
-  .c-green  {background:linear-gradient(135deg,#087858,#10A878);box-shadow:0 6px 20px rgba(8,120,88,0.30);}
-  .c-pink   {background:linear-gradient(135deg,#D43A8A,#F060A8);box-shadow:0 8px 24px rgba(212,58,138,0.40);}
-  .start-btn{width:100%;padding:18px;border-radius:14px;border:none;background:linear-gradient(90deg,#1A4AB8,#2A68E0);color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(26,74,184,0.30);letter-spacing:0.5px;}
-  .start-note{color:#8098C0;font-size:12px;margin-top:12px;}
+  /* HOME – 한 화면 완성형 반응형 레이아웃 */
+  .page.active{padding:0;}
+  #page-home{background:#E8F0FC;overflow-y:auto;}
+  .home-wrap{
+    max-width:420px;width:100%;margin:0 auto;
+    display:flex;flex-direction:column;
+    min-height:100vh;
+    padding:clamp(10px,3vw,20px) clamp(12px,4vw,20px);
+    box-sizing:border-box;
+  }
+  /* 헤더 */
+  .home-header{text-align:center;padding:clamp(8px,2vh,14px) 0 clamp(6px,1.5vh,10px);}
+  .logo-box{
+    width:clamp(44px,8vw,60px);height:clamp(44px,8vw,60px);
+    border-radius:16px;
+    background:linear-gradient(135deg,#2A5EC8 0%,#6A3DB8 50%,#E8407A 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-size:clamp(20px,4vw,28px);
+    margin:0 auto clamp(6px,1.5vh,10px);
+    box-shadow:0 6px 20px rgba(42,94,200,0.30);
+  }
+  .brand{
+    font-size:clamp(8px,2vw,10px);letter-spacing:3px;font-weight:800;text-transform:uppercase;
+    background:linear-gradient(90deg,#2A5EC8,#E8407A);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    margin-bottom:4px;
+  }
+  .home-title{color:#0A1E42;font-size:clamp(18px,5vw,24px);font-weight:900;letter-spacing:-0.5px;margin-bottom:3px;}
+  .home-sub{color:#3A5A88;font-size:clamp(10px,2.5vw,12px);line-height:1.6;margin-bottom:0;}
+
+  /* 메뉴 그리드 */
+  .card-grid{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:clamp(6px,2vw,10px);
+    margin:clamp(8px,2vh,14px) 0 clamp(4px,1vh,8px);
+    flex:1;
+  }
+  .mod-card{
+    border:none;border-radius:14px;
+    padding:clamp(10px,2.5vw,14px) clamp(10px,2.5vw,14px);
+    text-align:left;cursor:pointer;
+    transition:transform 0.18s,box-shadow 0.18s;color:#fff;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    min-height:clamp(72px,14vh,92px);
+  }
+  .mod-card:active{transform:scale(0.97);}
+  .mod-card .icon{font-size:clamp(16px,4vw,20px);margin-bottom:4px;display:block;line-height:1;}
+  .mod-card .ctitle{font-size:clamp(11px,3vw,13px);font-weight:800;margin-bottom:2px;color:#fff;}
+  .mod-card .cdesc{font-size:clamp(9px,2.2vw,10px);color:rgba(255,255,255,0.82);line-height:1.3;}
+  .c-blue {background:linear-gradient(135deg,#2A5EC8,#4A80E8);box-shadow:0 4px 14px rgba(42,94,200,0.35);}
+  .c-cyan {background:linear-gradient(135deg,#0A8CAA,#1AB8CC);box-shadow:0 4px 14px rgba(10,140,170,0.32);}
+  .c-steel{background:linear-gradient(135deg,#1A5AA0,#2A80CC);box-shadow:0 4px 14px rgba(26,90,160,0.32);}
+  .c-gold {background:linear-gradient(135deg,#B87800,#D8A010);box-shadow:0 4px 14px rgba(184,120,0,0.32);}
+  .c-green{background:linear-gradient(135deg,#087858,#10A878);box-shadow:0 4px 14px rgba(8,120,88,0.30);}
+  .c-pink {background:linear-gradient(135deg,#D43A8A,#F060A8);box-shadow:0 4px 14px rgba(212,58,138,0.40);}
+  .start-note{color:#8098C0;font-size:clamp(9px,2.2vw,11px);text-align:center;margin-bottom:clamp(4px,1vh,8px);}
 
   /* 저작권 + QR 영역 */
-  .home-footer{margin-top:20px;padding-top:16px;border-top:1px solid rgba(42,94,200,0.10);}
-  .copyright-box{background:rgba(42,94,200,0.04);border:1px solid rgba(42,94,200,0.10);border-radius:10px;padding:10px 14px;margin-bottom:14px;}
-  .copyright-text{color:#8098C0;font-size:10px;line-height:1.7;text-align:center;}
-  .copyright-text strong{color:#5A7AB8;font-weight:700;}
-  .qr-section{display:flex;align-items:center;gap:14px;background:#fff;border-radius:14px;padding:14px;border:1px solid rgba(42,94,200,0.12);box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+  .home-footer{
+    border-top:1px solid rgba(42,94,200,0.10);
+    padding-top:clamp(6px,1.5vh,10px);
+    margin-top:auto;
+  }
+  /* QR + 저작권 가로 배치 */
+  .footer-inner{display:flex;align-items:center;gap:10px;}
   .qr-box{flex-shrink:0;position:relative;}
-  #qr-canvas{border-radius:8px;display:block;}
-  .qr-refresh-badge{position:absolute;bottom:-6px;right:-6px;background:#2A5EC8;color:#fff;font-size:8px;font-weight:800;padding:2px 5px;border-radius:8px;white-space:nowrap;}
-  .qr-info{flex:1;text-align:left;}
-  .qr-title{color:#0A1E42;font-size:12px;font-weight:800;margin-bottom:4px;}
-  .qr-desc{color:#8098C0;font-size:10px;line-height:1.6;}
-  .qr-timer{display:inline-flex;align-items:center;gap:4px;margin-top:6px;background:rgba(42,94,200,0.07);border-radius:8px;padding:3px 8px;}
-  .qr-timer-text{color:#2A5EC8;font-size:10px;font-weight:700;}
-  #qr-countdown{color:#E8407A;font-weight:900;font-size:11px;}
+  #qr-canvas{border-radius:6px;display:block;}
+  .qr-refresh-badge{
+    position:absolute;bottom:-5px;right:-5px;
+    background:#2A5EC8;color:#fff;font-size:7px;font-weight:800;
+    padding:1px 4px;border-radius:6px;white-space:nowrap;
+  }
+  .footer-right{flex:1;min-width:0;}
+  .qr-scan-label{color:#0A1E42;font-size:clamp(9px,2.2vw,11px);font-weight:800;margin-bottom:2px;}
+  .qr-timer{display:inline-flex;align-items:center;gap:3px;background:rgba(42,94,200,0.07);border-radius:6px;padding:2px 6px;margin-bottom:4px;}
+  .qr-timer-text{color:#2A5EC8;font-size:9px;font-weight:700;}
+  #qr-countdown{color:#E8407A;font-weight:900;font-size:10px;}
+  .copyright-text{
+    color:#8098C0;font-size:clamp(7.5px,1.8vw,9px);line-height:1.55;
+    border-top:1px dashed rgba(42,94,200,0.12);
+    padding-top:5px;margin-top:4px;
+  }
+  .copyright-text strong{color:#5A7AB8;font-weight:700;}
+
+  /* 반응형: 매우 작은 화면 */
+  @media(max-height:640px){
+    .home-header{padding:4px 0 4px;}
+    .logo-box{width:38px;height:38px;font-size:17px;margin-bottom:4px;}
+    .home-title{font-size:16px;}
+    .home-sub{font-size:10px;}
+    .mod-card{min-height:62px;padding:8px 10px;}
+    .card-grid{gap:6px;margin:8px 0 4px;}
+  }
+  @media(min-width:480px){
+    .home-wrap{padding:20px 24px;}
+    .card-grid{gap:12px;}
+    .mod-card{min-height:96px;}
+  }
 
   /* GENDER */
   .gender-wrap{max-width:400px;width:100%;text-align:center;}
@@ -141,50 +204,77 @@
 <!-- HOME -->
 <div id="page-home" class="page active">
   <div class="home-wrap">
-    <div class="logo-box">✦</div>
-    <div class="brand">AI Style Makeover</div>
-    <h1 class="home-title">나의 스타일 진단</h1>
-    <p class="home-sub">이미지메이킹 전문가 AI가<br/>나만의 퍼스널 스타일을 찾아드려요</p>
-    <div class="card-grid">
-      <button class="mod-card c-blue"   onclick="selectModule('color')">   <span class="icon">🎨</span><div class="ctitle">퍼스널 컬러</div>  <div class="cdesc">피부톤 맞춤 컬러 분석</div></button>
-      <button class="mod-card c-cyan"   onclick="selectModule('face')">    <span class="icon">◎</span> <div class="ctitle">얼굴형 분석</div>  <div class="cdesc">얼굴형별 스타일 팁</div></button>
-      <button class="mod-card c-steel"  onclick="selectModule('body')">    <span class="icon">▣</span> <div class="ctitle">체형 스타일</div>  <div class="cdesc">체형별 핏 추천</div></button>
-      <button class="mod-card c-gold"   onclick="selectModule('recommend')" ><span class="icon">✦</span><div class="ctitle">스타일 추천</div>  <div class="cdesc">나에게 딱 맞는 룩</div></button>
-      <button class="mod-card c-green"  onclick="selectModule('daily')">   <span class="icon">📅</span><div class="ctitle">매일 코디</div>    <div class="cdesc">데일리 스타일링 플랜</div></button>
-      <button class="mod-card c-pink"   onclick="selectModule('fulldiag')"><span class="icon">✦</span> <div class="ctitle">전체 AI 진단</div> <div class="cdesc">종합 이미지메이킹 분석</div></button>
+
+    <!-- 헤더 -->
+    <div class="home-header">
+      <div class="logo-box">✦</div>
+      <div class="brand">AI Style Makeover</div>
+      <h1 class="home-title">나의 스타일 진단</h1>
+      <p class="home-sub">이미지메이킹 전문가 AI가 나만의 퍼스널 스타일을 찾아드려요</p>
     </div>
-    <p class="start-note">각 메뉴를 선택하거나 전체 진단을 받아보세요</p>
 
-    <!-- 저작권 + QR 영역 -->
+    <!-- 메뉴 카드 -->
+    <div class="card-grid">
+      <button class="mod-card c-blue"  onclick="selectModule('color')">
+        <span class="icon">🎨</span>
+        <div class="ctitle">퍼스널 컬러</div>
+        <div class="cdesc">피부톤 맞춤 컬러 분석</div>
+      </button>
+      <button class="mod-card c-cyan"  onclick="selectModule('face')">
+        <span class="icon">◎</span>
+        <div class="ctitle">얼굴형 분석</div>
+        <div class="cdesc">얼굴형별 스타일 팁</div>
+      </button>
+      <button class="mod-card c-steel" onclick="selectModule('body')">
+        <span class="icon">▣</span>
+        <div class="ctitle">체형 스타일</div>
+        <div class="cdesc">체형별 핏 추천</div>
+      </button>
+      <button class="mod-card c-gold"  onclick="selectModule('recommend')">
+        <span class="icon">✦</span>
+        <div class="ctitle">스타일 추천</div>
+        <div class="cdesc">나에게 딱 맞는 룩</div>
+      </button>
+      <button class="mod-card c-green" onclick="selectModule('daily')">
+        <span class="icon">📅</span>
+        <div class="ctitle">매일 코디</div>
+        <div class="cdesc">데일리 스타일링 플랜</div>
+      </button>
+      <button class="mod-card c-pink"  onclick="selectModule('fulldiag')">
+        <span class="icon">✦</span>
+        <div class="ctitle">전체 AI 진단</div>
+        <div class="cdesc">종합 이미지메이킹 분석</div>
+      </button>
+    </div>
+
+    <p class="start-note">메뉴를 선택하거나 전체 진단을 받아보세요</p>
+
+    <!-- 푸터: QR + 저작권 -->
     <div class="home-footer">
-      <!-- 저작권 안내 -->
-      <div class="copyright-box">
-        <p class="copyright-text">
-          <strong>© 2025 상상우리 (Sangsangwoori). All Rights Reserved.</strong><br/>
-          본 AI 스타일 진단 서비스의 모든 콘텐츠, 진단 알고리즘, UI 디자인은<br/>
-          상상우리의 독점 저작물입니다.<br/>
-          <strong>무단 복제·배포·상업적 이용을 엄금합니다.</strong><br/>
-          Unauthorized reproduction or commercial use is strictly prohibited.
-        </p>
-      </div>
-
-      <!-- QR 코드 섹션 -->
-      <div class="qr-section">
+      <div class="footer-inner">
+        <!-- QR 코드 -->
         <div class="qr-box">
           <div id="qr-canvas"></div>
           <div class="qr-refresh-badge">🔄 자동갱신</div>
         </div>
-        <div class="qr-info">
-          <div class="qr-title">📱 모바일로 바로 체험</div>
-          <div class="qr-desc">QR코드를 스캔하면<br/>스마트폰에서 즉시 진단 가능</div>
+        <!-- 오른쪽: 스캔 안내 + 저작권 -->
+        <div class="footer-right">
+          <div class="qr-scan-label">📱 QR 스캔 → 모바일 체험</div>
           <div class="qr-timer">
-            <span class="qr-timer-text">🔒 보안 갱신</span>
+            <span class="qr-timer-text">🔒</span>
             <span id="qr-countdown">--</span>
-            <span class="qr-timer-text">초 후</span>
+            <span class="qr-timer-text">초 후 갱신</span>
+          </div>
+          <div class="copyright-text">
+            <strong>© 2025 상상우리 (Sangsangwoori). All Rights Reserved.</strong><br/>
+            본 서비스의 모든 콘텐츠·알고리즘·디자인은 상상우리의 독점 저작물입니다.<br/>
+            <strong>무단 복제·배포·상업적 이용을 금지합니다.</strong><br/>
+            Unauthorized reproduction or commercial use is strictly prohibited.
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -827,12 +917,10 @@ function shareResult(){
   const APP_URL  = "https://ai-style-makeover.vercel.app";
   const INTERVAL = 300; // 5분마다 QR 갱신 (무단복제 방지)
 
-  let qrInstance = null;
-  let countdown  = INTERVAL;
-  let timerEl    = document.getElementById('qr-countdown');
+  let countdown = INTERVAL;
+  const timerEl = document.getElementById('qr-countdown');
 
   function genToken(){
-    // 시간 기반 토큰: 5분 단위 블록 × 상상우리 시드
     const block = Math.floor(Date.now() / (INTERVAL * 1000));
     const seed  = (block * 0x9e3779b9 + 0x6c62272e) >>> 0;
     return seed.toString(36).toUpperCase().slice(0,8);
@@ -841,21 +929,29 @@ function shareResult(){
   function buildQrUrl(){
     const token = genToken();
     const ts    = Math.floor(Date.now() / (INTERVAL * 1000));
-    // 토큰 + 타임스탬프 포함 → 복제된 QR은 만료 후 무효
-    return `${ APP_URL }?t=${ token }&ts=${ ts }`;
+    return `${APP_URL}?t=${token}&ts=${ts}`;
+  }
+
+  function getQRSize(){
+    // 화면 너비에 따라 QR 크기 동적 조정
+    const w = window.innerWidth;
+    if(w <= 360) return 72;
+    if(w <= 480) return 80;
+    return 88;
   }
 
   function renderQR(){
     const el = document.getElementById('qr-canvas');
+    if(!el) return;
     el.innerHTML = '';
-    const url = buildQrUrl();
-    qrInstance = new QRCode(el, {
-      text:          url,
-      width:         100,
-      height:        100,
-      colorDark:     "#0A1E42",
-      colorLight:    "#ffffff",
-      correctLevel:  QRCode.CorrectLevel.H  // 최고 오류정정 레벨 (로고 가능)
+    const size = getQRSize();
+    new QRCode(el, {
+      text:         buildQrUrl(),
+      width:        size,
+      height:       size,
+      colorDark:    "#0A1E42",
+      colorLight:   "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
     });
     countdown = INTERVAL;
   }
@@ -866,8 +962,12 @@ function shareResult(){
     if(countdown <= 0) renderQR();
   }
 
-  // 초기 렌더링
-  renderQR();
+  // DOM 준비 후 초기 렌더링
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', renderQR);
+  } else {
+    renderQR();
+  }
   if(timerEl) timerEl.textContent = countdown;
   setInterval(tick, 1000);
 })();
