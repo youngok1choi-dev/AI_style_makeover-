@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560">
+<defs>
+  <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8EFF8"/><stop offset="100%" stop-color="#C8D8EC"/></linearGradient>
+  <linearGradient id="skin" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FDDBB4"/><stop offset="100%" stop-color="#F0B882"/></linearGradient>
+  <linearGradient id="outfit" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1B2E4A"/><stop offset="100%" stop-color="#0D1E33"/></linearGradient>
+  <linearGradient id="pants" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#1A2A3E"/><stop offset="100%" stop-color="#0A1828"/></linearGradient>
+  <linearGradient id="hair" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#2A1A0A"/><stop offset="100%" stop-color="#0A0500"/></linearGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.15"/></filter>
+</defs>
+<rect width="400" height="560" fill="url(#bg)" rx="20"/>
+<circle cx="340" cy="70" r="100" fill="rgba(255,255,255,0.06)"/>
+<circle cx="60" cy="490" r="70" fill="rgba(255,255,255,0.06)"/>
+<ellipse cx="200" cy="552" rx="85" ry="10" fill="rgba(0,0,0,0.15)"/>
+<!-- 구두 -->
+<path d="M148 508 Q148 522 168 524 L192 524 Q196 520 194 508 L188 503 L150 503 Z" fill="#1a1a1a"/>
+<path d="M208 508 Q208 522 228 524 L252 524 Q256 520 254 508 L248 503 L210 503 Z" fill="#1a1a1a"/>
+<!-- 바지 -->
+<path d="M158 350 Q153 430 153 503 L194 503 Q193 428 200 350 Z" fill="url(#pants)"/>
+<path d="M242 350 Q247 430 247 503 L206 503 Q207 428 200 350 Z" fill="url(#pants)"/>
+<path d="M158 370 Q165 400 163 445" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none"/>
+<path d="M242 370 Q235 400 237 445" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none"/>
+<!-- 수트 하단 -->
+<path d="M132 225 Q126 285 130 355 L270 355 Q274 285 268 225 Z" fill="url(#outfit)"/>
+<!-- 수트 상단 -->
+<path d="M138 148 Q108 162 106 215 Q104 265 130 310 L270 310 Q296 265 294 215 Q292 162 262 148 L228 148 Q216 162 200 170 Q184 162 172 148 Z" fill="url(#outfit)"/>
+<!-- 수트 라펠 -->
+<path d="M172 148 L162 200 L182 232 L200 205 Z" fill="#1B2E4A" opacity="0.8"/>
+<path d="M228 148 L238 200 L218 232 L200 205 Z" fill="#1B2E4A" opacity="0.8"/>
+<path d="M182 232 L200 220 L218 232" fill="#0D1E33"/>
+<!-- 타이 -->
+<path d="M196 172 L196 270 Q198 275 200 275 Q202 275 204 270 L204 172 Q202 168 200 170 Q198 168 196 172 Z" fill="#8B1A2E"/>
+<path d="M193 168 Q200 160 207 168 L204 172 Q200 165 196 172 Z" fill="#6B0E1E"/>
+<!-- 셔츠 -->
+<path d="M182 148 L182 235 L218 235 L218 148 Q209 165 200 170 Q191 165 182 148 Z" fill="white"/>
+<!-- 수트 버튼 -->
+<circle cx="200" cy="252" r="4.5" fill="#C8A855"/>
+<circle cx="200" cy="272" r="4.5" fill="#C8A855"/>
+<!-- 포켓 스퀘어 -->
+<path d="M138 222 Q144 212 154 215 L152 230 L134 230 Z" fill="white"/>
+<!-- 소매 -->
+<path d="M106 165 Q76 182 68 250 Q66 278 82 290 L102 282 Q98 240 118 182 Z" fill="url(#outfit)"/>
+<path d="M294 165 Q324 182 332 250 Q334 278 318 290 L298 282 Q302 240 282 182 Z" fill="url(#outfit)"/>
+<rect x="68" y="280" width="34" height="13" rx="4" fill="#1B2E4A" stroke="#C8A855" stroke-width="1.5"/>
+<rect x="298" y="280" width="34" height="13" rx="4" fill="#1B2E4A" stroke="#C8A855" stroke-width="1.5"/>
+<!-- 손 -->
+<ellipse cx="85" cy="301" rx="16" ry="20" fill="url(#skin)"/>
+<ellipse cx="315" cy="301" rx="16" ry="20" fill="url(#skin)"/>
+<!-- 목 -->
+<rect x="185" y="108" width="30" height="44" rx="10" fill="url(#skin)"/>
+<!-- 얼굴 (남성: 각진 턱) -->
+<path d="M152 88 Q152 128 162 148 Q180 162 200 164 Q220 162 238 148 Q248 128 248 88 Q248 45 200 42 Q152 45 152 88 Z" fill="url(#skin)" filter="url(#sh)"/>
+<!-- 턱선 강조 -->
+<path d="M162 148 Q180 158 200 160 Q220 158 238 148" stroke="rgba(180,110,60,0.2)" stroke-width="6" fill="none"/>
+<!-- 귀 -->
+<ellipse cx="153" cy="90" rx="12" ry="16" fill="url(#skin)"/>
+<ellipse cx="247" cy="90" rx="12" ry="16" fill="url(#skin)"/>
+<!-- 머리카락 (짧게) -->
+<ellipse cx="200" cy="60" rx="52" ry="38" fill="url(#hair)"/>
+<path d="M152 75 Q150 55 160 48 Q180 42 200 42 Q220 42 240 48 Q250 55 248 75" fill="url(#hair)"/>
+<!-- 눈 -->
+<ellipse cx="180" cy="88" rx="11" ry="8" fill="white"/>
+<ellipse cx="220" cy="88" rx="11" ry="8" fill="white"/>
+<circle cx="181" cy="89" r="7" fill="#2A3040"/>
+<circle cx="221" cy="89" r="7" fill="#2A3040"/>
+<circle cx="181" cy="89" r="4" fill="#0A0E18"/>
+<circle cx="221" cy="89" r="4" fill="#0A0E18"/>
+<circle cx="183" cy="87" r="2.2" fill="white"/>
+<circle cx="223" cy="87" r="2.2" fill="white"/>
+<path d="M169 84 Q180 80 191 84" stroke="#0A0E18" stroke-width="2" fill="none"/>
+<path d="M209 84 Q220 80 231 84" stroke="#0A0E18" stroke-width="2" fill="none"/>
+<!-- 눈썹 (짙게) -->
+<path d="M168 75 Q180 70 193 75" stroke="#1A1A25" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<path d="M207 75 Q220 70 232 75" stroke="#1A1A25" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<!-- 코 (남성 강조) -->
+<path d="M196 96 Q194 112 197 118 Q200 122 203 118 Q206 112 204 96" stroke="#C07848" stroke-width="2.5" fill="rgba(200,140,80,0.15)" stroke-linecap="round"/>
+<!-- 입 (남성) -->
+<path d="M184 132 Q192 128 200 129 Q208 128 216 132 Q209 140 200 141 Q191 140 184 132 Z" fill="#B05840"/>
+<path d="M184 132 Q200 127 216 132" stroke="#904030" stroke-width="1" fill="none"/>
+<!-- 수염 (약간) -->
+<path d="M172 145 Q186 152 200 153 Q214 152 228 145" stroke="rgba(40,30,20,0.18)" stroke-width="4" fill="none" stroke-linecap="round"/>
+<!-- 레이블 -->
+<rect x="30" y="496" width="340" height="48" rx="12" fill="rgba(0,0,0,0.75)"/>
+<text x="200" y="514" text-anchor="middle" fill="#C8A855" font-size="10" font-family="Arial" font-weight="600" letter-spacing="2">CLASSIC MEN</text>
+<text x="200" y="534" text-anchor="middle" fill="white" font-size="15" font-family="Arial" font-weight="800">클래식 네이비 수트</text>
+</svg>
