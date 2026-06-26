@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560">
+<defs>
+  <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F4F0E8"/><stop offset="100%" stop-color="#E4D8C0"/></linearGradient>
+  <linearGradient id="skin" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#FDDBB4"/><stop offset="100%" stop-color="#F0B882"/></linearGradient>
+  <linearGradient id="outfit" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C8B890"/><stop offset="100%" stop-color="#A09060"/></linearGradient>
+  <linearGradient id="pants" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#D8C8A0"/><stop offset="100%" stop-color="#B0A070"/></linearGradient>
+  <linearGradient id="hair" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#5A4020"/><stop offset="100%" stop-color="#2A1A08"/></linearGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.15"/></filter>
+</defs>
+<rect width="400" height="560" fill="url(#bg)" rx="20"/>
+<circle cx="340" cy="70" r="100" fill="rgba(255,255,255,0.07)"/>
+<circle cx="60" cy="490" r="70" fill="rgba(255,255,255,0.07)"/>
+<ellipse cx="200" cy="552" rx="80" ry="10" fill="rgba(0,0,0,0.12)"/>
+<!-- 힐 -->
+<path d="M155 510 Q158 520 170 522 L188 522 Q192 520 190 510 L183 505 L158 505 Z" fill="#1a1a1a"/>
+<rect x="183" y="510" width="5" height="22" rx="2" fill="#2a2a2a"/>
+<path d="M212 510 Q215 520 227 522 L245 522 Q249 520 247 510 L240 505 L215 505 Z" fill="#1a1a1a"/>
+<rect x="240" y="510" width="5" height="22" rx="2" fill="#2a2a2a"/>
+<!-- 다리 -->
+<path d="M162 355 Q157 435 157 505 L190 505 Q192 432 196 355 Z" fill="url(#pants)"/>
+<path d="M204 355 Q208 432 210 505 L243 505 Q243 435 238 355 Z" fill="url(#pants)"/>
+<!-- 블레이저 -->
+<path d="M148 150 Q118 162 115 215 Q112 270 125 355 L275 355 Q288 270 285 215 Q282 162 252 150 L218 150 Q208 162 200 168 Q192 162 182 150 Z" fill="url(#outfit)"/>
+<path d="M182 150 L174 198 L190 226 L200 202 Z" fill="#C8B890" opacity="0.7"/>
+<path d="M218 150 L226 198 L210 226 L200 202 Z" fill="#C8B890" opacity="0.7"/>
+<path d="M190 226 L200 215 L210 226" fill="#A09060"/>
+<circle cx="200" cy="246" r="5" fill="#D4B870"/>
+<circle cx="200" cy="268" r="5" fill="#D4B870"/>
+<circle cx="200" cy="290" r="5" fill="#D4B870"/>
+<!-- 이너 -->
+<path d="M184 150 L184 232 L216 232 L216 150 Q208 165 200 170 Q192 165 184 150 Z" fill="white"/>
+<!-- 소매 -->
+<path d="M115 172 Q86 188 78 252 Q76 278 90 286 L108 280 Q104 238 120 188 Z" fill="url(#outfit)"/>
+<path d="M285 172 Q314 188 322 252 Q324 278 310 286 L292 280 Q296 238 280 188 Z" fill="url(#outfit)"/>
+<rect x="78" y="276" width="30" height="12" rx="4" fill="#C8B890" stroke="#D4B870" stroke-width="1.5"/>
+<rect x="292" y="276" width="30" height="12" rx="4" fill="#C8B890" stroke="#D4B870" stroke-width="1.5"/>
+<!-- 손 -->
+<ellipse cx="93" cy="296" rx="15" ry="19" fill="url(#skin)"/>
+<ellipse cx="307" cy="296" rx="15" ry="19" fill="url(#skin)"/>
+<!-- 목 -->
+<rect x="186" y="110" width="28" height="44" rx="10" fill="url(#skin)"/>
+<!-- 얼굴 -->
+<ellipse cx="200" cy="88" rx="48" ry="52" fill="url(#skin)" filter="url(#sh)"/>
+<ellipse cx="156" cy="90" rx="11" ry="15" fill="url(#skin)"/>
+<ellipse cx="244" cy="90" rx="11" ry="15" fill="url(#skin)"/>
+<ellipse cx="157" cy="102" r="4" fill="rgba(200,120,70,0.35)"/>
+<ellipse cx="243" cy="102" r="4" fill="rgba(200,120,70,0.35)"/>
+<circle cx="157" cy="108" r="5" fill="#D4B870"/>
+<circle cx="157" cy="120" r="4" fill="#D4B870"/>
+<circle cx="243" cy="108" r="5" fill="#D4B870"/>
+<circle cx="243" cy="120" r="4" fill="#D4B870"/>
+<!-- 머리 -->
+<ellipse cx="200" cy="55" rx="51" ry="46" fill="url(#hair)"/>
+<path d="M152 62 Q146 118 150 152 Q157 160 164 156 Q161 118 162 74 Z" fill="url(#hair)"/>
+<path d="M248 62 Q254 118 250 152 Q243 160 236 156 Q239 118 238 74 Z" fill="url(#hair)"/>
+<path d="M174 32 Q190 26 207 30" stroke="rgba(150,100,50,0.4)" stroke-width="3" fill="none" stroke-linecap="round"/>
+<!-- 눈 -->
+<ellipse cx="182" cy="90" rx="11" ry="7.5" fill="white"/>
+<ellipse cx="218" cy="90" rx="11" ry="7.5" fill="white"/>
+<circle cx="183" cy="91" r="6.5" fill="#3A2510"/>
+<circle cx="219" cy="91" r="6.5" fill="#3A2510"/>
+<circle cx="183" cy="91" r="3.8" fill="#0E0805"/>
+<circle cx="219" cy="91" r="3.8" fill="#0E0805"/>
+<circle cx="185" cy="89" r="2" fill="white"/>
+<circle cx="221" cy="89" r="2" fill="white"/>
+<path d="M171 86 Q182 82 193 86" stroke="#1A0A05" stroke-width="2" fill="none"/>
+<path d="M207 86 Q218 82 229 86" stroke="#1A0A05" stroke-width="2" fill="none"/>
+<!-- 눈썹 -->
+<path d="M170 78 Q182 73 194 77" stroke="#2A1A0A" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M206 77 Q218 73 230 78" stroke="#2A1A0A" stroke-width="3" fill="none" stroke-linecap="round"/>
+<!-- 코 -->
+<path d="M197 96 Q200 108 203 96" stroke="#C87848" stroke-width="2" fill="none"/>
+<ellipse cx="193" cy="108" rx="3.5" ry="2.5" fill="rgba(180,100,60,0.25)"/>
+<ellipse cx="207" cy="108" rx="3.5" ry="2.5" fill="rgba(180,100,60,0.25)"/>
+<!-- 입 -->
+<path d="M184 120 Q192 115 200 116 Q208 115 216 120 Q209 130 200 131 Q191 130 184 120 Z" fill="#D4607A"/>
+<path d="M184 120 Q200 113 216 120" stroke="#B04060" stroke-width="1" fill="none"/>
+<path d="M190 119 Q200 116 210 119" stroke="rgba(255,200,210,0.6)" stroke-width="1.5" fill="none"/>
+<!-- 볼터치 -->
+<ellipse cx="166" cy="107" rx="16" ry="10" fill="rgba(220,100,120,0.12)"/>
+<ellipse cx="234" cy="107" rx="16" ry="10" fill="rgba(220,100,120,0.12)"/>
+<!-- 레이블 -->
+<rect x="30" y="496" width="340" height="48" rx="12" fill="rgba(0,0,0,0.75)"/>
+<text x="200" y="514" text-anchor="middle" fill="#D4B870" font-size="10" font-family="Arial" font-weight="600" letter-spacing="2">NATURAL WOMEN</text>
+<text x="200" y="534" text-anchor="middle" fill="white" font-size="15" font-family="Arial" font-weight="800">베이지 리넨 내추럴룩</text>
+</svg>
