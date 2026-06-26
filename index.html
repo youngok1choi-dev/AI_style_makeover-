@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AI 스타일 메이크오버</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#E8F0FC;min-height:100vh;}
+  .page{display:none;min-height:100vh;}
+  .page.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+
+  /* HOME */
+  .home-wrap{max-width:440px;width:100%;text-align:center;}
+  .logo-box{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#2A5EC8 0%,#6A3DB8 50%,#E8407A 100%);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 18px;box-shadow:0 8px 28px rgba(42,94,200,0.30);}
+  .brand{font-size:11px;letter-spacing:4px;font-weight:800;text-transform:uppercase;background:linear-gradient(90deg,#2A5EC8,#E8407A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
+  .home-title{color:#0A1E42;font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:8px;}
+  .home-sub{color:#3A5A88;font-size:14px;line-height:1.8;margin-bottom:32px;}
+  .card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
+  .mod-card{border:none;border-radius:18px;padding:20px 16px;text-align:left;cursor:pointer;transition:transform 0.18s,box-shadow 0.18s;color:#fff;}
+  .mod-card:hover{transform:translateY(-4px);}
+  .mod-card .icon{font-size:24px;margin-bottom:10px;display:block;}
+  .mod-card .ctitle{font-size:14px;font-weight:800;margin-bottom:4px;color:#fff;}
+  .mod-card .cdesc{font-size:11px;color:rgba(255,255,255,0.82);}
+  .c-blue   {background:linear-gradient(135deg,#2A5EC8,#4A80E8);box-shadow:0 6px 20px rgba(42,94,200,0.35);}
+  .c-cyan   {background:linear-gradient(135deg,#0A8CAA,#1AB8CC);box-shadow:0 6px 20px rgba(10,140,170,0.32);}
+  .c-steel  {background:linear-gradient(135deg,#1A5AA0,#2A80CC);box-shadow:0 6px 20px rgba(26,90,160,0.32);}
+  .c-gold   {background:linear-gradient(135deg,#B87800,#D8A010);box-shadow:0 6px 20px rgba(184,120,0,0.32);}
+  .c-green  {background:linear-gradient(135deg,#087858,#10A878);box-shadow:0 6px 20px rgba(8,120,88,0.30);}
+  .c-pink   {background:linear-gradient(135deg,#D43A8A,#F060A8);box-shadow:0 8px 24px rgba(212,58,138,0.40);}
+  .start-btn{width:100%;padding:18px;border-radius:14px;border:none;background:linear-gradient(90deg,#1A4AB8,#2A68E0);color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(26,74,184,0.30);letter-spacing:0.5px;}
+  .start-note{color:#8098C0;font-size:12px;margin-top:12px;}
+
+  /* GENDER */
+  .gender-wrap{max-width:400px;width:100%;text-align:center;}
+  .gender-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px;}
+  .gender-card{border:2px solid rgba(42,94,200,0.15);border-radius:20px;padding:32px 16px;background:#fff;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.06);}
+  .gender-card:hover{border-color:rgba(42,94,200,0.5);background:rgba(42,94,200,0.05);transform:translateY(-2px);}
+  .gender-card .gem{font-size:48px;margin-bottom:10px;display:block;}
+  .gender-card .glabel{color:#0A1E42;font-size:18px;font-weight:800;}
+  .gender-card .gsub{color:#8098C0;font-size:12px;margin-top:4px;}
+
+  /* RESULT TAB */
+  .tab-bar{display:flex;background:#fff;border-bottom:1px solid rgba(42,94,200,0.12);overflow-x:auto;}
+  .tab-btn{flex:0 0 auto;padding:13px 16px;border:none;background:none;cursor:pointer;color:#8098C0;font-size:13px;font-weight:500;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;}
+  .tab-btn.active{color:#2A5EC8;font-weight:700;border-bottom-color:#2A5EC8;}
+
+  /* BACK BTN */
+  .back-btn{background:rgba(42,94,200,0.08);border:1px solid rgba(42,94,200,0.18);color:#3A5A88;cursor:pointer;font-size:16px;padding:8px 14px;border-radius:10px;font-weight:700;}
+
+  /* SECTION CARD */
+  .sec{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;border:1px solid rgba(42,94,200,0.10);box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+  .sec-title{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:14px;font-weight:700;color:#0A1E42;}
+  .sec-icon{width:30px;height:30px;border-radius:9px;background:rgba(42,94,200,0.08);display:flex;align-items:center;justify-content:center;font-size:14px;}
+
+  /* QUIZ */
+  .opt-btn{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border-radius:14px;border:1.5px solid rgba(42,94,200,0.15);background:#fff;cursor:pointer;text-align:left;transition:all 0.15s;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+  .opt-btn.selected{border-color:#2A5EC8;background:rgba(42,94,200,0.06);}
+  .opt-swatch{width:46px;height:46px;border-radius:12px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+  .opt-label{color:#0A1E42;font-weight:700;font-size:15px;}
+  .opt-sub{color:#8098C0;font-size:12px;margin-top:2px;}
+  .opt-check{width:22px;height:22px;border-radius:50%;border:2px solid rgba(42,94,200,0.25);margin-left:auto;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;}
+  .opt-check.checked{background:#2A5EC8;border-color:#2A5EC8;}
+  .next-btn{width:100%;padding:17px;border-radius:14px;border:none;background:linear-gradient(90deg,#1A4AB8,#2A68E0);color:#fff;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(26,74,184,0.25);}
+  .next-btn:disabled{background:#D0D8E8;color:#8098C0;box-shadow:none;cursor:not-allowed;}
+  .progress-bar{flex:1;background:rgba(42,94,200,0.12);border-radius:99px;height:5px;}
+  .progress-fill{height:5px;border-radius:99px;background:linear-gradient(90deg,#2A5EC8,#0A8CAA);transition:width 0.4s;}
+
+  /* COLOR SWATCH */
+  .pal-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+  .pal-swatch{width:78px;height:58px;border-radius:14px;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+  .pal-name{color:#0A1E42;font-weight:700;font-size:14px;}
+  .pal-hex{color:#8098C0;font-size:11px;font-family:monospace;margin-top:2px;}
+
+  /* DAILY */
+  .daily-row{background:#fff;border-radius:14px;padding:14px;margin-bottom:8px;border:1px solid rgba(42,94,200,0.10);display:flex;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+  .day-badge{width:44px;height:44px;border-radius:11px;background:rgba(42,94,200,0.07);border:1px solid rgba(42,94,200,0.15);display:flex;align-items:center;justify-content:center;color:#3A5A88;font-size:12px;font-weight:700;flex-shrink:0;}
+  .day-outfit{color:#3A5A88;font-size:13px;line-height:1.6;margin-bottom:6px;}
+  .day-point{background:rgba(42,94,200,0.07);border-radius:8px;padding:4px 10px;display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(42,94,200,0.15);color:#2A5EC8;font-size:11px;font-weight:600;}
+
+  /* OUTFIT IMG GRID */
+  .img-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
+  .img-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .outfit-img-wrap{border-radius:13px;overflow:hidden;cursor:pointer;position:relative;background:#EEF4FF;aspect-ratio:3/4;box-shadow:0 4px 16px rgba(0,0,0,0.10);}
+  .outfit-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .outfit-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.75));padding:18px 8px 8px;border-radius:0 0 13px 13px;color:#fff;font-size:10px;text-align:center;font-weight:600;}
+  .zoom-badge{position:absolute;top:6px;right:6px;background:rgba(42,94,200,0.85);border-radius:5px;padding:2px 6px;font-size:9px;color:#fff;font-weight:700;}
+
+  /* AVOID */
+  .avoid-box{background:rgba(184,48,64,0.06);border-radius:12px;padding:12px 14px;border:1px solid rgba(184,48,64,0.18);margin-top:12px;}
+  .avoid-title{color:#B83040;font-size:12px;font-weight:700;margin-bottom:8px;}
+  .avoid-tag{background:rgba(184,48,64,0.08);color:#B83040;font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid rgba(184,48,64,0.18);display:inline-block;margin:3px 3px 0 0;}
+
+  /* LIGHTBOX */
+  #lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.94);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:14px;cursor:pointer;}
+  #lightbox.open{display:flex;}
+  #lightbox img{max-height:85vh;max-width:92vw;border-radius:16px;object-fit:contain;}
+  #lightbox p{color:rgba(255,255,255,0.4);font-size:13px;}
+
+  .page-inner{max-width:480px;width:100%;padding:16px;}
+  .sticky-header{background:#fff;border-bottom:1px solid rgba(42,94,200,0.10);padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10;}
+  .result-page{min-height:100vh;background:#E8F0FC;}
+  .content-wrap{max-width:520px;margin:0 auto;padding:16px;}
+  .badge{background:rgba(42,94,200,0.08);color:#2A5EC8;font-size:12px;padding:5px 16px;border-radius:99px;border:1px solid rgba(42,94,200,0.20);font-weight:600;display:inline-block;}
+  .tip-box{background:rgba(42,94,200,0.06);border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid rgba(42,94,200,0.12);}
+  .tip-label{color:#2A5EC8;font-size:12px;font-weight:700;margin-bottom:4px;}
+  .tip-text{color:#3A5A88;font-size:13px;line-height:1.7;}
+  .green-box{background:rgba(8,120,88,0.06);border-radius:12px;padding:14px;border:1px solid rgba(8,120,88,0.18);}
+  .green-title{color:#087858;font-size:12px;font-weight:700;margin-bottom:4px;}
+  .green-text{color:#1A6A50;font-size:13px;line-height:1.7;}
+  .action-btn{width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(90deg,#1A4AB8,#2A68E0);color:#fff;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:32px;box-shadow:0 4px 16px rgba(26,74,184,0.25);}
+  .share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  .share-btn{padding:14px;border-radius:12px;border:1px solid rgba(42,94,200,0.18);background:#fff;color:#0A1E42;font-size:13px;cursor:pointer;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+</style>
+</head>
+<body>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox()">
+  <img id="lb-img" src="" alt="outfit"/>
+  <p>탭하여 닫기</p>
+</div>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="home-wrap">
+    <div class="logo-box">✦</div>
+    <div class="brand">AI Style Makeover</div>
+    <h1 class="home-title">나의 스타일 진단</h1>
+    <p class="home-sub">이미지메이킹 전문가 AI가<br/>나만의 퍼스널 스타일을 찾아드려요</p>
+    <div class="card-grid">
+      <button class="mod-card c-blue"   onclick="selectModule('color')">   <span class="icon">🎨</span><div class="ctitle">퍼스널 컬러</div>  <div class="cdesc">피부톤 맞춤 컬러 분석</div></button>
+      <button class="mod-card c-cyan"   onclick="selectModule('face')">    <span class="icon">◎</span> <div class="ctitle">얼굴형 분석</div>  <div class="cdesc">얼굴형별 스타일 팁</div></button>
+      <button class="mod-card c-steel"  onclick="selectModule('body')">    <span class="icon">▣</span> <div class="ctitle">체형 스타일</div>  <div class="cdesc">체형별 핏 추천</div></button>
+      <button class="mod-card c-gold"   onclick="selectModule('recommend')" ><span class="icon">✦</span><div class="ctitle">스타일 추천</div>  <div class="cdesc">나에게 딱 맞는 룩</div></button>
+      <button class="mod-card c-green"  onclick="selectModule('daily')">   <span class="icon">📅</span><div class="ctitle">매일 코디</div>    <div class="cdesc">데일리 스타일링 플랜</div></button>
+      <button class="mod-card c-pink"   onclick="selectModule('fulldiag')"><span class="icon">✦</span> <div class="ctitle">전체 AI 진단</div> <div class="cdesc">종합 이미지메이킹 분석</div></button>
+    </div>
+    <p class="start-note">각 메뉴를 선택하거나 전체 진단을 받아보세요</p>
+  </div>
+</div>
+
+<!-- GENDER -->
+<div id="page-gender" class="page">
+  <div class="gender-wrap">
+    <button class="back-btn" onclick="goHome()">← 홈</button>
+    <div style="margin-top:28px;">
+      <div id="gender-icon" style="font-size:40px;margin-bottom:12px;"></div>
+      <h2 id="gender-title" style="color:#0A1E42;font-size:22px;font-weight:800;margin-bottom:6px;"></h2>
+      <p style="color:#8098C0;font-size:14px;">성별을 선택해주세요</p>
+    </div>
+    <div class="gender-grid">
+      <button class="gender-card" onclick="selectGender('female')">
+        <span class="gem">👩</span>
+        <div class="glabel">여성</div>
+        <div class="gsub">여성 스타일 진단</div>
+      </button>
+      <button class="gender-card" onclick="selectGender('male')">
+        <span class="gem">👨</span>
+        <div class="glabel">남성</div>
+        <div class="gsub">남성 스타일 진단</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="page-quiz" class="page" style="padding:0;justify-content:flex-start;">
+  <div style="width:100%;max-width:480px;margin:0 auto;padding:16px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-top:8px;">
+      <button class="back-btn" onclick="quizBack()">←</button>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <span id="prog-label" style="color:#8098C0;font-size:12px;font-weight:600;min-width:36px;text-align:right;"></span>
+    </div>
+    <div class="sec" style="margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+        <div style="width:38px;height:38px;border-radius:12px;background:rgba(42,94,200,0.10);border:1px solid rgba(42,94,200,0.20);display:flex;align-items:center;justify-content:center;font-size:16px;color:#2A5EC8;font-weight:700;" id="q-icon"></div>
+        <div>
+          <div style="color:#8098C0;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;" id="q-step"></div>
+          <div style="color:#0A1E42;font-weight:800;font-size:17px;" id="q-title"></div>
+        </div>
+      </div>
+      <p style="color:#8098C0;font-size:13px;margin:0;" id="q-sub"></p>
+    </div>
+    <div id="q-options"></div>
+    <button class="next-btn" id="next-btn" disabled onclick="nextStep()">다음으로 →</button>
+  </div>
+</div>
+
+<!-- PHOTO -->
+<div id="page-photo" class="page" style="padding:0;justify-content:flex-start;">
+  <div style="width:100%;max-width:480px;margin:0 auto;padding:16px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-top:8px;">
+      <button class="back-btn" onclick="showPage('page-quiz')">←</button>
+      <span style="color:#0A1E42;font-weight:800;font-size:16px;">사진 업로드 (선택)</span>
+    </div>
+    <div class="sec" onclick="document.getElementById('file-in').click()" style="cursor:pointer;text-align:center;padding:36px 20px;border:2px dashed rgba(42,94,200,0.20);">
+      <div id="photo-preview-wrap">
+        <div style="font-size:40px;margin-bottom:10px;">📷</div>
+        <div style="color:#0A1E42;font-weight:700;font-size:14px;">사진을 업로드해주세요</div>
+        <div style="color:#8098C0;font-size:12px;margin-top:4px;">전신 또는 얼굴 사진 권장</div>
+      </div>
+    </div>
+    <input type="file" id="file-in" accept="image/*" style="display:none" onchange="handlePhoto(event)"/>
+    <button class="next-btn" id="photo-next-btn" onclick="finalize()">건너뛰고 결과 보기 →</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="page-loading" class="page">
+  <div style="text-align:center;">
+    <div style="width:56px;height:56px;border:4px solid rgba(42,94,200,0.15);border-top:4px solid #2A5EC8;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px;"></div>
+    <p style="color:#0A1E42;font-size:18px;font-weight:700;">AI가 분석 중이에요</p>
+    <p style="color:#8098C0;font-size:13px;margin-top:8px;">퍼스널 컬러와 체형을 정밀 분석 중...</p>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="page-result" class="result-page" style="display:none;">
+  <div class="sticky-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div>
+      <div id="res-style-name" style="color:#0A1E42;font-weight:700;font-size:14px;"></div>
+      <div id="res-gender-label" style="color:#2A5EC8;font-size:11px;"></div>
+    </div>
+    <div style="margin-left:auto;background:rgba(42,94,200,0.08);border:1px solid rgba(42,94,200,0.20);border-radius:99px;padding:5px 14px;">
+      <span style="color:#2A5EC8;font-size:12px;font-weight:700;">✦ AI 분석 완료</span>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('t-result',this)">진단 결과</button>
+    <button class="tab-btn" onclick="switchTab('t-recommend',this)">스타일 추천</button>
+    <button class="tab-btn" onclick="switchTab('t-daily',this)">매일 코디</button>
+    <button class="tab-btn" onclick="switchTab('t-before',this)">변신 전·후</button>
+  </div>
+  <div class="content-wrap">
+    <!-- 진단 결과 -->
+    <div id="t-result">
+      <div class="sec" style="text-align:center;background:linear-gradient(135deg,rgba(42,94,200,0.08),rgba(10,140,170,0.05));border-color:rgba(42,94,200,0.18);margin-top:4px;">
+        <div style="color:#8098C0;font-size:11px;letter-spacing:3px;margin-bottom:8px;text-transform:uppercase;">My Style Type</div>
+        <h2 id="res-type" style="color:#0A1E42;font-size:22px;font-weight:800;margin-bottom:8px;"></h2>
+        <span id="res-desc" class="badge"></span>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-icon">✦</div>AI 퍼스널 스타일 코멘트</div>
+        <p id="res-comment" style="color:#3A5A88;font-size:14px;line-height:1.9;"></p>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-icon">🎨</div>나의 컬러 팔레트 <span id="res-tone" class="badge" style="margin-left:auto;font-size:11px;"></span></div>
+        <div id="res-palette"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-icon">◎</div>얼굴형 스타일 팁</div>
+        <div class="tip-box"><p id="res-face-tip" class="tip-text"></p></div>
+        <div class="green-box"><div class="green-title">💄 메이크업 포인트</div><p id="res-face-makeup" class="green-text"></p></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-icon">💡</div>체형 & 키 스타일링 팁</div>
+        <div class="tip-box"><div class="tip-label">체형 팁</div><p id="res-body-tip" class="tip-text"></p></div>
+        <div class="tip-box" style="margin-top:10px;"><div class="tip-label">키 팁</div><p id="res-height-tip" class="tip-text"></p></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-icon">💾</div>결과 저장 & 공유</div>
+        <div class="share-grid">
+          <button class="share-btn" onclick="saveResult()">📄 결과 저장</button>
+          <button class="share-btn" style="border-color:rgba(42,94,200,0.30);background:rgba(42,94,200,0.06);color:#2A5EC8;" onclick="shareResult()">🔗 공유하기</button>
+        </div>
+      </div>
+      <button class="action-btn" onclick="goHome()">다시 진단하기 →</button>
+    </div>
+    <!-- 스타일 추천 -->
+    <div id="t-recommend" style="display:none;">
+      <div class="sec" style="background:linear-gradient(135deg,rgba(42,94,200,0.08),rgba(10,140,170,0.05));border-color:rgba(42,94,200,0.18);text-align:center;margin-top:4px;">
+        <div style="color:#8098C0;font-size:11px;margin-bottom:4px;letter-spacing:2px;">RECOMMENDED STYLE</div>
+        <div id="rec-type" style="color:#0A1E42;font-size:18px;font-weight:800;"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-icon">👗</div>추천 의상 스타일 <span style="margin-left:auto;color:#8098C0;font-size:11px;">탭하여 크게 보기</span></div>
+        <div class="img-grid-3" id="rec-imgs"></div>
+        <div class="avoid-box"><div class="avoid-title">⚠️ 피해야 할 스타일</div><div id="rec-avoid"></div></div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-icon">🎨</div>추천 컬러</div>
+        <div id="rec-palette"></div>
+      </div>
+      <button class="action-btn" onclick="goHome()">다시 진단하기 →</button>
+    </div>
+    <!-- 매일 코디 -->
+    <div id="t-daily" style="display:none;">
+      <div class="sec" style="background:linear-gradient(135deg,rgba(42,94,200,0.08),rgba(10,140,170,0.05));border-color:rgba(42,94,200,0.18);text-align:center;margin-top:4px;">
+        <div style="color:#8098C0;font-size:11px;letter-spacing:2px;margin-bottom:4px;">WEEKLY STYLING PLAN</div>
+        <div id="daily-type" style="color:#0A1E42;font-size:17px;font-weight:800;"></div>
+      </div>
+      <div id="daily-rows"></div>
+      <button class="action-btn" onclick="goHome()">다시 진단하기 →</button>
+    </div>
+    <!-- 변신 전후 -->
+    <div id="t-before" style="display:none;">
+      <div class="sec" style="margin-top:4px;">
+        <div class="sec-title"><div class="sec-icon">📷</div>변신 전 · 후</div>
+        <div class="img-grid-2">
+          <div>
+            <div style="color:#8098C0;font-size:10px;text-align:center;margin-bottom:6px;letter-spacing:1px;">BEFORE</div>
+            <div id="before-wrap" style="background:#EEF4FF;border-radius:13px;aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed rgba(42,94,200,0.20);cursor:pointer;" onclick="document.getElementById('file-in2').click()">
+              <div style="font-size:28px;margin-bottom:6px;">📷</div>
+              <div style="color:#8098C0;font-size:11px;">사진 추가</div>
+            </div>
+            <input type="file" id="file-in2" accept="image/*" style="display:none" onchange="handlePhoto2(event)"/>
+          </div>
+          <div>
+            <div style="color:#2A5EC8;font-size:10px;text-align:center;margin-bottom:6px;letter-spacing:1px;">AFTER</div>
+            <div class="outfit-img-wrap" onclick="openLightbox(afterImgUrl)">
+              <img id="after-img" src="" alt="after" onerror="this.style.display='none'"/>
+              <div class="outfit-label" id="after-label"></div>
+              <div class="zoom-badge">🔍</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-title"><div class="sec-icon">👗</div>변신 후 스타일 룩</div>
+        <div class="img-grid-2" id="after-imgs"></div>
+      </div>
+      <button class="action-btn" onclick="goHome()">다시 진단하기 →</button>
+    </div>
+  </div>
+</div>
+
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
+<script>
+// ── DATA ──
+const PALETTE={
+  cool:{tone:"쿨톤",colors:["#5A7A9E","#7A6A98","#8898A8","#9880A0","#C0A8B8"],names:["스틸 블루","모브 퍼플","스모키 그레이","더스티 핑크","블러쉬 로즈"]},
+  warm:{tone:"웜톤",colors:["#8B6B3A","#B4803A","#7A5A30","#C49050","#B8A060"],names:["카멜 브라운","버번 오렌지","다크 카키","머스타드 골드","샴페인"]},
+  neutral:{tone:"뉴트럴톤",colors:["#6A7A6A","#8A7A6A","#5A6A7A","#7A6A5A","#908070"],names:["올리브 그레이","워름 그레이","쿨 카키","모카 베이지","샌드"]},
+  dark:{tone:"딥톤",colors:["#3A2818","#7A3810","#203A28","#5A2848","#2A1838"],names:["다크 초콜릿","버건디","딥 포레스트","딥 플럼","미드나잇"]},
+};
+const FACE_TIPS={
+  oval:{tip:"갸름한 얼굴형은 어떤 스타일도 잘 어울리는 이상적인 비율이에요!",makeup:"하이라이터로 이마와 코를 자연스럽게 강조하면 더욱 빛나요."},
+  round:{tip:"세로 라인을 강조해 얼굴을 길어 보이게 연출하는 것이 핵심이에요.",makeup:"컨투어로 양 볼을 살짝 음영 처리하면 한층 갸름해 보여요."},
+  square:{tip:"부드러운 곡선 라인으로 각진 턱선을 완화하면 세련돼 보여요.",makeup:"턱선에 쉐이딩을 가볍게 올리면 부드러워요."},
+  long:{tip:"가로 볼륨을 살려 얼굴이 균형 있어 보이도록 연출해요.",makeup:"볼 부분에 블러셔를 넓게 올려 가로 폭을 강조해주세요."},
+};
+const BODY_TIPS={
+  slim:"볼륨감을 살려주는 레이어드와 플레어 실루엣이 잘 어울려요.",
+  normal:"어떤 스타일도 잘 소화하는 밸런스 체형! 다양하게 도전해보세요.",
+  chubby:"세로 라인을 강조하는 V넥과 롱 라인으로 슬림하게 보여요.",
+  plus:"모노톤 코디와 A라인 실루엣으로 자신감 있게 연출하세요.",
+};
+const BODY_TIPS_M={
+  slim:"레이어드와 볼드한 아우터로 볼륨감을 살려보세요.",
+  normal:"어떤 스타일도 잘 소화하는 밸런스 체형! 다양하게 도전해보세요.",
+  chubby:"다크톤 수직 라인으로 슬림하고 세련된 인상을 줄 수 있어요.",
+  plus:"모노톤 코디와 구조적인 실루엣으로 자신감 있게 연출하세요.",
+};
+const HEIGHT_TIPS={short:"하이웨이스트·세로라인·모노톤으로 키를 길어 보이게!",medium:"어떤 실루엣도 소화 가능한 이상적인 비율이에요!",tall:"롱 실루엣과 레이어드로 모델 같은 분위기를 연출해요!"};
+const CLOTHES_F={slim:["플레어 미디 스커트","볼륨 슬리브 블라우스","레이어드 니트","와이드 팬츠"],normal:["랩 원피스","테일러드 재킷","부츠컷 팬츠","드레이프 블라우스"],chubby:["A라인 롱 원피스","롱 카디건","V넥 니트","세로 스트라이프"],plus:["맥시 원피스","모노톤 수트","오버블라우스","드레이프 재킷"]};
+const CLOTHES_M={slim:["레이어드 셔츠","슬림 슬랙스","오버핏 니트","카고 팬츠"],normal:["테일러드 수트","체크 셔츠","스트레이트 팬츠","트렌치코트"],chubby:["다크톤 수트","V넥 니트","스트레이트 팬츠","롱 재킷"],plus:["오버사이즈 코트","모노톤 세트업","와이드 팬츠","롱 블레이저"]};
+const AVOID_F={slim:["타이트 바디콘","얇은 소재 단품"],normal:["극단적 비율 아이템"],chubby:["크롭 탑","가로 스트라이프"],plus:["타이트 스키니","허리 강조 벨트"]};
+const AVOID_M={slim:["오버사이즈 단품만 착용"],normal:["극단적 비율 아이템"],chubby:["가로 스트라이프","밝은 단색 상의"],plus:["타이트 스키니 팬츠","크롭 기장"]};
+const STYLE_F={classic:{name:"클래식 엘레강스",desc:"시대를 초월한 품격"},formal:{name:"모던 프로페셔널",desc:"당당하고 세련된 커리어룩"},chic:{name:"시크 모던",desc:"도시적이고 매력적인 스타일"},feminine:{name:"소피스티케이티드 페미닌",desc:"성숙하고 우아한 여성미"},natural:{name:"소프트 내추럴",desc:"편안하고 자연스러운 아름다움"}};
+const STYLE_M={classic:{name:"클래식 젠틀맨",desc:"품격 있는 정통 스타일"},business:{name:"비즈니스 엘리트",desc:"세련된 프로페셔널 룩"},street:{name:"어반 스트리트",desc:"도시적이고 트렌디한"},smart:{name:"스마트 캐주얼",desc:"세련되고 편안한 일상 룩"},natural:{name:"내추럴 라이프스타일",desc:"자연스럽고 활동적인"}};
+const OUTFIT_F={"classic-cool":["navy wool coat women elegant","pearl cashmere turtleneck women","charcoal blazer women sophisticated"],"classic-warm":["camel trench coat women","brown tweed jacket women","beige wool coat chic"],"classic-neutral":["olive women blazer elegant","grey coat women sophisticated","taupe women classic"],"classic-dark":["burgundy coat women elegant","navy women blazer classic","chocolate women suit"],"formal-cool":["steel blue power suit women","charcoal suit women professional","grey blazer women formal"],"formal-warm":["caramel office blazer women","brown formal suit women","mustard jacket structured"],"formal-neutral":["olive grey suit women formal","mocha blazer women","khaki formal women"],"formal-dark":["deep navy formal suit women","forest green blazer office","dark plum women formal"],"chic-cool":["cool tone turtleneck chic women","minimalist cool women outfit","modern silk blouse women"],"chic-warm":["camel slim chic women","warm tone minimalist women","rust silk women"],"chic-neutral":["greige minimalist women","neutral silk women","taupe sleek women"],"chic-dark":["dark sophisticated women","deep tone women look","dramatic silk women"],"feminine-cool":["dusty blue midi dress women","lilac elegant dress women","cool floral midi women"],"feminine-warm":["peach midi dress women","warm floral women dress","dusty rose elegant"],"feminine-neutral":["sage green dress women","khaki feminine midi","natural feminine dress"],"feminine-dark":["deep rose elegant dress women","plum feminine midi","dark floral elegant"],"natural-cool":["linen cool grey women","blue linen women","natural cool tone women"],"natural-warm":["warm beige linen women","earth tone women relaxed","warm linen chic"],"natural-neutral":["earth tone linen casual women","relaxed taupe women","neutral linen women"],"natural-dark":["dark earth linen women","deep tone relaxed women","forest women casual"]};
+const OUTFIT_M={"classic-cool":["classic navy suit men elegant","grey wool coat men sophisticated","white dress shirt men classic"],"classic-warm":["camel coat men elegant","brown tweed jacket men","warm tone men classic suit"],"classic-neutral":["grey suit men classic","olive men blazer","taupe men coat elegant"],"classic-dark":["dark navy men suit","charcoal men formal","black wool coat men"],"business-cool":["blue power suit men professional","grey business suit men","steel blue men blazer"],"business-warm":["brown business suit men","warm tone men formal","caramel blazer men office"],"business-neutral":["neutral grey men suit","olive men business","khaki men formal"],"business-dark":["dark men business suit","charcoal men office","deep navy men professional"],"street-cool":["urban men streetwear cool","minimalist men street style","modern men casual cool"],"street-warm":["earth tone men streetwear","warm casual men outfit","camel men street style"],"street-neutral":["neutral men street casual","greige men outfit","taupe men casual"],"street-dark":["dark men street style","all black men outfit","deep tone men urban"],"smart-cool":["smart casual men cool tone","business casual men blue","men polo smart"],"smart-warm":["smart casual men warm","business casual men earth","men chino warm"],"smart-neutral":["smart casual men neutral","men chino greige","relaxed men smart"],"smart-dark":["dark smart casual men","men dark trousers smart","deep men business casual"],"natural-cool":["linen men cool","men outdoor cool casual","natural men cool"],"natural-warm":["linen men warm beige","earth tone men casual","warm men outdoor"],"natural-neutral":["natural linen men","earth men casual","relaxed men neutral"],"natural-dark":["dark earth men casual","men outdoor dark tone","forest men style"]};
+const DAILY_F={classic:[{day:"월",outfit:"네이비 블레이저 + 화이트 블라우스 + 슬랙스",point:"진주 귀걸이로 포인트"},{day:"화",outfit:"체크 미디 스커트 + 캐시미어 니트",point:"스카프로 우아함"},{day:"수",outfit:"트렌치코트 + 심플 원피스",point:"클러치 백으로 마무리"},{day:"목",outfit:"테일러드 수트 + 실크 블라우스",point:"골드 뱅글로 세련미"},{day:"금",outfit:"랩 원피스 + 카디건 레이어드",point:"로퍼로 캐주얼"},{day:"주말",outfit:"워싱 니트 + 와이드 팬츠",point:"토트백으로 여유"}],chic:[{day:"월",outfit:"올블랙 터틀넥 + 슬랙스",point:"실버 링 레이어링"},{day:"화",outfit:"레더 재킷 + 미디 스커트",point:"앵클 부츠로 엣지"},{day:"수",outfit:"오버사이즈 코트 + 슬림 팬츠",point:"볼드 선글라스"},{day:"목",outfit:"모노크롬 니트 세트업",point:"체인 백으로 포인트"},{day:"금",outfit:"실크 블라우스 + 하이웨이스트 팬츠",point:"골드 이어링"},{day:"주말",outfit:"캐주얼 롱 코트 + 부츠",point:"베레모로 시크함"}],feminine:[{day:"월",outfit:"플로럴 미디 드레스 + 카디건",point:"진주 목걸이"},{day:"화",outfit:"러플 블라우스 + 플레어 스커트",point:"리본 헤어밴드"},{day:"수",outfit:"페미닌 수트 + 레이스 이너",point:"꽃 브로치"},{day:"목",outfit:"랩 원피스 + 볼레로 재킷",point:"스트랩 힐"},{day:"금",outfit:"소프트 니트 + 새틴 스커트",point:"작은 크로스백"},{day:"주말",outfit:"로맨틱 맥시 드레스",point:"밀짚모자"}],natural:[{day:"월",outfit:"리넨 블라우스 + 와이드 팬츠",point:"캔버스 토트백"},{day:"화",outfit:"스트라이프 니트 + 청바지",point:"화이트 스니커즈"},{day:"수",outfit:"오버사이즈 셔츠 + 슬랙스",point:"버킷햇"},{day:"목",outfit:"소프트 원피스 + 데님 재킷",point:"가죽 샌들"},{day:"금",outfit:"니트 카디건 + 미디 스커트",point:"우든 귀걸이"},{day:"주말",outfit:"롤업 팬츠 + 린넨 셔츠",point:"에스파드리유"}],formal:[{day:"월",outfit:"파워 수트 + 크리스프 셔츠",point:"뱃지 핀"},{day:"화",outfit:"펜슬 스커트 + 구조적 재킷",point:"포인트 힐"},{day:"수",outfit:"점프수트 + 롱 코트",point:"미니멀 시계"},{day:"목",outfit:"모노톤 앙상블 + 벨트",point:"스트럭처드 백"},{day:"금",outfit:"드레이프 블라우스 + 슬랙스",point:"에나멜 플랫슈즈"},{day:"주말",outfit:"캐주얼 수트 + 스니커즈",point:"메신저백"}]};
+const DAILY_M={classic:[{day:"월",outfit:"네이비 수트 + 화이트 셔츠 + 타이",point:"가죽 더비슈즈"},{day:"화",outfit:"그레이 슬랙스 + 터틀넥 니트",point:"포켓 스퀘어"},{day:"수",outfit:"트렌치코트 + 스트라이프 셔츠",point:"브로그 슈즈"},{day:"목",outfit:"블레이저 + 치노 팬츠",point:"가죽 벨트"},{day:"금",outfit:"카디건 + 옥스퍼드 셔츠",point:"스웨이드 로퍼"},{day:"주말",outfit:"캐주얼 재킷 + 청바지",point:"화이트 스니커즈"}],business:[{day:"월",outfit:"차콜 수트 + 블루 셔츠",point:"실크 타이"},{day:"화",outfit:"네이비 블레이저 + 그레이 슬랙스",point:"포켓 스퀘어"},{day:"수",outfit:"스트라이프 수트 + 화이트 셔츠",point:"옥스퍼드 슈즈"},{day:"목",outfit:"다크 수트 + 파스텔 셔츠",point:"클래식 워치"},{day:"금",outfit:"비즈니스 캐주얼 + 치노",point:"로퍼"},{day:"주말",outfit:"니트 폴로 + 슬랙스",point:"캔버스 슈즈"}],street:[{day:"월",outfit:"후드 + 카고 팬츠",point:"볼캡"},{day:"화",outfit:"오버핏 티 + 조거 팬츠",point:"청키 스니커즈"},{day:"수",outfit:"데님 재킷 + 흑청바지",point:"비니"},{day:"목",outfit:"트랙수트",point:"미니 크로스백"},{day:"금",outfit:"그래픽 티 + 와이드 팬츠",point:"뉴에라 캡"},{day:"주말",outfit:"코듀로이 재킷 + 청바지",point:"부츠"}],smart:[{day:"월",outfit:"니트 폴로 + 치노",point:"로퍼"},{day:"화",outfit:"옥스퍼드 셔츠 + 청바지",point:"더비슈즈"},{day:"수",outfit:"가디건 + 슬랙스",point:"클래식 시계"},{day:"목",outfit:"블레이저 + 다크 청바지",point:"스웨이드 로퍼"},{day:"금",outfit:"스웨터 + 치노",point:"패브릭 워치"},{day:"주말",outfit:"리넨 셔츠 + 쇼츠",point:"슬립온"}],natural:[{day:"월",outfit:"리넨 셔츠 + 치노",point:"캔버스 백"},{day:"화",outfit:"스트라이프 티 + 청바지",point:"화이트 스니커즈"},{day:"수",outfit:"오버핏 니트 + 슬랙스",point:"버킷햇"},{day:"목",outfit:"캠핑 셔츠 + 와이드 팬츠",point:"샌들"},{day:"금",outfit:"코튼 가디건 + 데님",point:"슬립온"},{day:"주말",outfit:"린넨 세트업",point:"에스파드리유"}]};
+
+const STEPS_F=[
+  {id:"skin",icon:"🎨",title:"피부톤",sub:"자연광에서 보이는 피부색을 선택해주세요",opts:[{v:"cool",l:"쿨톤",s:"밝고 핑크빛·블루 언더톤",sw:"#B8A0B8"},{v:"warm",l:"웜톤",s:"노란빛·황금빛 언더톤",sw:"#C8A870"},{v:"neutral",l:"뉴트럴",s:"중간·혼합 언더톤",sw:"#A89888"},{v:"dark",l:"딥톤",s:"어둡고 깊은 피부",sw:"#6B4A3A"}]},
+  {id:"face",icon:"◎",title:"얼굴형",sub:"나와 가장 가까운 얼굴형을 선택해주세요",opts:[{v:"oval",l:"갸름한 형",s:"달걀형·균형 잡힌",sw:"#7A9878"},{v:"round",l:"둥근 형",s:"볼이 통통하고 동그란",sw:"#7888A8"},{v:"square",l:"각진 형",s:"턱선이 각지고 넓은",sw:"#A87870"},{v:"long",l:"긴 형",s:"얼굴 길이가 넓이보다 긴",sw:"#A09070"}]},
+  {id:"body",icon:"▣",title:"체형",sub:"현재 체형을 편하게 선택해주세요",opts:[{v:"slim",l:"슬림형",s:"마른 편",sw:"#688858"},{v:"normal",l:"표준형",s:"균형 잡힌 체형",sw:"#587898"},{v:"chubby",l:"통통형",s:"약간 통통한 편",sw:"#886878"},{v:"plus",l:"풍만형",s:"플러스 사이즈",sw:"#887858"}]},
+  {id:"height",icon:"↕",title:"키",sub:"키에 따라 어울리는 실루엣이 달라져요",opts:[{v:"short",l:"페티트",s:"160cm 미만",sw:"#A08060"},{v:"medium",l:"미디엄",s:"160~165cm",sw:"#608060"},{v:"tall",l:"톨",s:"165cm 이상",sw:"#607090"}]},
+  {id:"style",icon:"✦",title:"선호 스타일",sub:"끌리는 패션 무드를 골라주세요",opts:[{v:"classic",l:"클래식",s:"단정하고 품격있는",sw:"#D4C4A0"},{v:"formal",l:"포멀·정장",s:"전문적이고 세련된",sw:"#A0B0C0"},{v:"chic",l:"시크·모던",s:"도시적이고 당당한",sw:"#C0A0B0"},{v:"feminine",l:"페미닌",s:"여성스럽고 우아한",sw:"#C8A8A8"},{v:"natural",l:"내추럴",s:"자연스럽고 편안한",sw:"#A0B898"}]},
+];
+const STEPS_M=[
+  {id:"skin",icon:"🎨",title:"피부톤",sub:"자연광에서 보이는 피부색을 선택해주세요",opts:[{v:"cool",l:"쿨톤",s:"밝고 블루 언더톤",sw:"#8898B8"},{v:"warm",l:"웜톤",s:"노란빛·황금빛 언더톤",sw:"#C8A870"},{v:"neutral",l:"뉴트럴",s:"중간·혼합 언더톤",sw:"#A89888"},{v:"dark",l:"딥톤",s:"어둡고 깊은 피부",sw:"#6B4A3A"}]},
+  {id:"face",icon:"◎",title:"얼굴형",sub:"나와 가장 가까운 얼굴형을 선택해주세요",opts:[{v:"oval",l:"갸름한 형",s:"균형 잡힌 이상적인",sw:"#7A9878"},{v:"round",l:"둥근 형",s:"볼이 통통하고 동그란",sw:"#7888A8"},{v:"square",l:"각진 형",s:"턱선이 각지고 남성적",sw:"#A87870"},{v:"long",l:"긴 형",s:"얼굴 길이가 긴 편",sw:"#A09070"}]},
+  {id:"body",icon:"▣",title:"체형",sub:"현재 체형을 편하게 선택해주세요",opts:[{v:"slim",l:"슬림형",s:"마른·슬렌더",sw:"#688858"},{v:"normal",l:"표준형",s:"균형 잡힌 체형",sw:"#587898"},{v:"chubby",l:"통통형",s:"약간 통통한 편",sw:"#886878"},{v:"plus",l:"빅사이즈",s:"큰 체형",sw:"#887858"}]},
+  {id:"height",icon:"↕",title:"키",sub:"키에 따라 어울리는 실루엣이 달라져요",opts:[{v:"short",l:"페티트",s:"170cm 미만",sw:"#A08060"},{v:"medium",l:"미디엄",s:"170~178cm",sw:"#608060"},{v:"tall",l:"톨",s:"178cm 이상",sw:"#607090"}]},
+  {id:"style",icon:"✦",title:"선호 스타일",sub:"끌리는 패션 무드를 골라주세요",opts:[{v:"classic",l:"클래식",s:"품격 있는 정통",sw:"#D4C4A0"},{v:"business",l:"비즈니스",s:"세련된 프로페셔널",sw:"#A0B0C0"},{v:"street",l:"스트리트",s:"트렌디하고 도시적",sw:"#808090"},{v:"smart",l:"스마트 캐주얼",s:"세련되고 편안한",sw:"#90A898"},{v:"natural",l:"내추럴",s:"자연스럽고 활동적",sw:"#A0B898"}]},
+];
+
+// ── STATE ──
+let curModule=null,curGender=null,curStep=0,answers={},photoDataUrl=null,aiComment="",afterImgUrl="";
+
+function imgUrl(q,i=0){return `https://source.unsplash.com/600x750/?${encodeURIComponent(q)}&sig=${i*41+7}`;}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='';});
+  document.getElementById('page-result').style.display='none';
+  const el=document.getElementById(id);
+  if(id==='page-result'){el.style.display='block';}
+  else{el.classList.add('active');}
+}
+function goHome(){showPage('page-home');answers={};curStep=0;photoDataUrl=null;aiComment="";}
+function selectModule(m){curModule=m;showGender(m);}
+function showGender(m){
+  const icons={color:"🎨",face:"◎",body:"▣",recommend:"✦",daily:"📅",fulldiag:"✦"};
+  const titles={color:"퍼스널 컬러",face:"얼굴형 분석",body:"체형 스타일",recommend:"스타일 추천",daily:"매일 코디",fulldiag:"전체 AI 진단"};
+  document.getElementById('gender-icon').textContent=icons[m]||"✦";
+  document.getElementById('gender-title').textContent=titles[m]||"";
+  showPage('page-gender');
+}
+function selectGender(g){
+  curGender=g;
+  if(curModule==='fulldiag'){startQuiz();}
+  else{runModule();}
+}
+
+function runModule(){
+  // For non-fulldiag modules, go straight to a simple result page
+  // We'll reuse the quiz flow but start it
+  answers={};curStep=0;
+  startQuiz();
+}
+
+function startQuiz(){
+  answers={};curStep=0;
+  renderStep();
+  showPage('page-quiz');
+}
+function renderStep(){
+  const steps=curGender==='male'?STEPS_M:STEPS_F;
+  const s=steps[curStep];
+  const total=steps.length;
+  document.getElementById('prog-fill').style.width=(curStep/total*100)+'%';
+  document.getElementById('prog-label').textContent=(curStep+1)+'/'+total;
+  document.getElementById('q-icon').textContent=s.icon;
+  document.getElementById('q-step').textContent='Step '+(curStep+1);
+  document.getElementById('q-title').textContent=s.title;
+  document.getElementById('q-sub').textContent=s.sub;
+  const nb=document.getElementById('next-btn');
+  nb.disabled=true;
+  nb.textContent=curStep<total-1?'다음으로 →':'사진 업로드 →';
+  const wrap=document.getElementById('q-options');
+  wrap.innerHTML='';
+  s.opts.forEach(o=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.innerHTML=`<div class="opt-swatch" style="background:${o.sw}"></div><div><div class="opt-label">${o.l}</div><div class="opt-sub">${o.s}</div></div><div class="opt-check" id="chk-${o.v}"></div>`;
+    btn.onclick=()=>selectOpt(o.v,s.id,s.opts);
+    wrap.appendChild(btn);
+  });
+}
+function selectOpt(val,sid,opts){
+  answers[sid]=val;
+  opts.forEach(o=>{
+    const chk=document.getElementById('chk-'+o.v);
+    if(chk){chk.classList.remove('checked');chk.textContent='';}
+  });
+  const chk=document.getElementById('chk-'+val);
+  if(chk){chk.classList.add('checked');chk.textContent='✓';}
+  document.getElementById('next-btn').disabled=false;
+}
+function nextStep(){
+  const steps=curGender==='male'?STEPS_M:STEPS_F;
+  if(curStep<steps.length-1){curStep++;renderStep();}
+  else{showPage('page-photo');}
+}
+function quizBack(){
+  if(curStep>0){curStep--;renderStep();}
+  else{showPage('page-gender');}
+}
+function handlePhoto(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    photoDataUrl=ev.target.result;
+    const pw=document.getElementById('photo-preview-wrap');
+    pw.innerHTML=`<img src="${photoDataUrl}" style="max-height:220px;border-radius:12px;object-fit:cover;"/>`;
+    document.getElementById('photo-next-btn').textContent='결과 보기 ✦';
+  };
+  r.readAsDataURL(f);
+}
+function handlePhoto2(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    const bw=document.getElementById('before-wrap');
+    bw.innerHTML=`<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:13px;"/>`;
+  };
+  r.readAsDataURL(f);
+}
+async function finalize(){
+  showPage('page-loading');
+  aiComment=await fetchAI();
+  buildResult();
+  showPage('page-result');
+}
+async function fetchAI(){
+  const sl={cool:"쿨톤",warm:"웜톤",neutral:"뉴트럴톤",dark:"딥톤"};
+  const fl={oval:"갸름한형",round:"둥근형",square:"각진형",long:"긴형"};
+  const bl={slim:"슬림",normal:"보통",chubby:"통통",plus:"풍만/빅"};
+  const hl={short:"페티트",medium:"미디엄",tall:"톨"};
+  const stlF={classic:"클래식",formal:"포멀·정장",chic:"시크·모던",feminine:"페미닌",natural:"내추럴"};
+  const stlM={classic:"클래식",business:"비즈니스",street:"스트리트",smart:"스마트캐주얼",natural:"내추럴"};
+  const stl=curGender==='male'?stlM:stlF;
+  const gLabel=curGender==='male'?"중장년 남성(40~60대)":"중장년 여성(40~60대)";
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,messages:[{role:"user",content:`당신은 ${gLabel} 전문 이미지메이킹 컨설턴트입니다.\n고객 특성을 바탕으로 따뜻하고 전문적으로 3~4문장의 퍼스널 스타일 코멘트를 한국어로 작성해주세요.\n\n피부톤: ${sl[answers.skin]||""}\n얼굴형: ${fl[answers.face]||""}\n체형: ${bl[answers.body]||""}\n키: ${hl[answers.height]||""}\n선호 스타일: ${stl[answers.style]||""}\n\n성숙한 아름다움과 품격을 살리는 구체적 스타일 포인트를 격려와 함께 담아주세요.`}]})});
+    const d=await res.json();return d.content?.[0]?.text||"당신만의 스타일을 찾아드릴게요!";
+  }catch{return "성숙하고 세련된 스타일로 새롭게 변신해보세요!";}
+}
+function buildResult(){
+  const {skin,face,body,height,style}=answers;
+  const pal=PALETTE[skin]||PALETTE.neutral;
+  const siMap=curGender==='male'?STYLE_M:STYLE_F;
+  const si=siMap[style]||Object.values(siMap)[0];
+  const faceTip=FACE_TIPS[face]||FACE_TIPS.oval;
+  const bodyTip=(curGender==='male'?BODY_TIPS_M:BODY_TIPS)[body]||"";
+  const clothes=(curGender==='male'?CLOTHES_M:CLOTHES_F)[body]||[];
+  const avoid=(curGender==='male'?AVOID_M:AVOID_F)[body]||[];
+  const daily=(curGender==='male'?DAILY_M:DAILY_F)[style]||Object.values(curGender==='male'?DAILY_M:DAILY_F)[0];
+  const oqMap=curGender==='male'?OUTFIT_M:OUTFIT_F;
+  const oq=oqMap[`${style}-${skin}`]||oqMap[Object.keys(oqMap)[0]];
+
+  document.getElementById('res-style-name').textContent=si.name;
+  document.getElementById('res-gender-label').textContent=(curGender==='male'?'남성':'여성')+' · AI 분석 완료';
+  document.getElementById('res-type').textContent=si.name;
+  document.getElementById('res-desc').textContent=si.desc;
+  document.getElementById('res-comment').textContent=aiComment;
+  document.getElementById('res-tone').textContent=pal.tone;
+  document.getElementById('rec-type').textContent=si.name;
+  document.getElementById('daily-type').textContent=si.name+' 주간 코디';
+
+  // Palette
+  let palHtml='';
+  pal.colors.forEach((c,i)=>{palHtml+=`<div class="pal-row"><div class="pal-swatch" style="background:${c}"></div><div><div class="pal-name">${pal.names[i]}</div><div class="pal-hex">${c.toUpperCase()}</div></div></div>`;});
+  document.getElementById('res-palette').innerHTML=palHtml;
+
+  let palHtml2='';
+  pal.colors.slice(0,3).forEach((c,i)=>{palHtml2+=`<div class="pal-row"><div class="pal-swatch" style="background:${c};width:72px;height:52px;"></div><div><div class="pal-name">${pal.names[i]}</div><div class="pal-hex">변신 후 주력 컬러</div></div></div>`;});
+  document.getElementById('rec-palette').innerHTML=palHtml2;
+
+  document.getElementById('res-face-tip').textContent=faceTip.tip;
+  document.getElementById('res-face-makeup').textContent=faceTip.makeup;
+  document.getElementById('res-body-tip').textContent=bodyTip;
+  document.getElementById('res-height-tip').textContent=HEIGHT_TIPS[height]||"";
+
+  // Outfit imgs
+  let imgHtml='';
+  (oq||[]).slice(0,3).forEach((q,i)=>{
+    const u=imgUrl(q,i);
+    imgHtml+=`<div class="outfit-img-wrap" onclick="openLightbox('${u}')"><img src="${u}" alt="${clothes[i]||''}" onerror="this.style.display='none'"/><div class="outfit-label">${clothes[i]||''}</div><div class="zoom-badge">🔍</div></div>`;
+  });
+  document.getElementById('rec-imgs').innerHTML=imgHtml;
+
+  let avoidHtml='';
+  avoid.forEach(a=>{avoidHtml+=`<span class="avoid-tag">${a}</span>`;});
+  document.getElementById('rec-avoid').innerHTML=avoidHtml;
+
+  // Daily
+  let dailyHtml='';
+  (daily||[]).forEach((d,i)=>{
+    dailyHtml+=`<div class="daily-row"><div class="day-badge" style="${i===5?'background:rgba(42,94,200,0.12);border-color:rgba(42,94,200,0.30);color:#2A5EC8;':''}">${d.day}</div><div><div class="day-outfit">${d.outfit}</div><div class="day-point">✦ ${d.point}</div></div></div>`;
+  });
+  document.getElementById('daily-rows').innerHTML=dailyHtml;
+
+  // After img
+  afterImgUrl=imgUrl(oq?oq[0]:'women elegant',30);
+  document.getElementById('after-img').src=afterImgUrl;
+  document.getElementById('after-label').textContent=si.name;
+
+  let afterHtml='';
+  (oq||[]).slice(0,4).forEach((q,i)=>{
+    const u=imgUrl(q,i+20);
+    afterHtml+=`<div class="outfit-img-wrap" onclick="openLightbox('${u}')"><img src="${u}" alt="${clothes[i]||''}" onerror="this.style.display='none'"/><div class="outfit-label">${clothes[i]||''}</div><div class="zoom-badge">🔍</div></div>`;
+  });
+  document.getElementById('after-imgs').innerHTML=afterHtml;
+}
+function switchTab(tabId,btn){
+  ['t-result','t-recommend','t-daily','t-before'].forEach(t=>{document.getElementById(t).style.display='none';});
+  document.getElementById(tabId).style.display='block';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function openLightbox(url){document.getElementById('lb-img').src=url;document.getElementById('lightbox').classList.add('open');}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
+function saveResult(){
+  const {skin,style}=answers;
+  const pal=PALETTE[skin]||PALETTE.neutral;
+  const siMap=curGender==='male'?STYLE_M:STYLE_F;
+  const si=siMap[style]||Object.values(siMap)[0];
+  const t=`[나의 스타일 진단 결과]\n스타일 타입: ${si.name}\n컬러톤: ${pal.tone}\n\nAI 코멘트:\n${aiComment}`;
+  const b=new Blob([t],{type:"text/plain"});
+  const u=URL.createObjectURL(b);
+  const a=document.createElement("a");a.href=u;a.download="스타일진단결과.txt";a.click();
+}
+function shareResult(){
+  const siMap=curGender==='male'?STYLE_M:STYLE_F;
+  const si=siMap[answers.style]||Object.values(siMap)[0];
+  if(navigator.share)navigator.share({title:"나의 스타일 진단",text:`${si.name} - ${si.desc}`});
+  else{navigator.clipboard.writeText(`${si.name}: ${si.desc}`);alert("클립보드에 복사되었어요!");}
+}
+</script>
+</body>
+</html>
