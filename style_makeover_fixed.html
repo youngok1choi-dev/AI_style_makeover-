@@ -387,18 +387,46 @@ let curModule=null,curGender=null,curStep=0,answers={},photoDataUrl=null,aiComme
 // ── 의상 이미지: GitHub raw SVG 일러스트 (100% 작동 보장) ──
 const RAW_BASE = "https://raw.githubusercontent.com/youngok1choi-dev/AI_style_makeover/main/images";
 
+// ── 실제 패션 모델 착장 사진 (GitHub raw CDN, CC0 라이선스) ──
+const RAW_PEOPLE = "https://raw.githubusercontent.com/youngok1choi-dev/AI_style_makeover/main/images/people";
+
+// 여성 사진: CatVTON + VITON-HD 공개 데이터셋 (CC0)
+// 남성 사진: CatVTON 공개 데이터셋 (CC0)
 const FASHION_IMG = {
-  "female_classic":  `${RAW_BASE}/f_classic.svg`,
-  "female_formal":   `${RAW_BASE}/f_formal.svg`,
-  "female_chic":     `${RAW_BASE}/f_chic.svg`,
-  "female_feminine": `${RAW_BASE}/f_feminine.svg`,
-  "female_natural":  `${RAW_BASE}/f_natural.svg`,
-  "male_classic":    `${RAW_BASE}/m_classic.svg`,
-  "male_business":   `${RAW_BASE}/m_business.svg`,
-  "male_street":     `${RAW_BASE}/m_street.svg`,
-  "male_smart":      `${RAW_BASE}/m_smart.svg`,
-  "male_natural":    `${RAW_BASE}/m_natural.svg`,
+  // ── 여성 ──
+  "female_classic":  `${RAW_PEOPLE}/f_05.jpg`,   // 정장 착장 여성
+  "female_formal":   `${RAW_PEOPLE}/f_06.jpg`,   // 포멀 착장 여성
+  "female_chic":     `${RAW_PEOPLE}/f_02.png`,   // 시크 착장 여성
+  "female_feminine": `${RAW_PEOPLE}/f_08.jpg`,   // 페미닌 착장 여성
+  "female_natural":  `${RAW_PEOPLE}/f_03.png`,   // 내추럴 착장 여성
+  "female_extra1":   `${RAW_PEOPLE}/f_01.jpg`,
+  "female_extra2":   `${RAW_PEOPLE}/f_04.png`,
+  "female_extra3":   `${RAW_PEOPLE}/f_07.jpg`,
+  // ── 남성 ──
+  "male_classic":    `${RAW_PEOPLE}/m_01.png`,   // 클래식 정장 남성
+  "male_business":   `${RAW_PEOPLE}/m_02.png`,   // 비즈니스 남성
+  "male_street":     `${RAW_PEOPLE}/m_03.png`,   // 스트리트 남성
+  "male_smart":      `${RAW_PEOPLE}/m_04.png`,   // 스마트캐주얼 남성
+  "male_natural":    `${RAW_PEOPLE}/m_01.png`,   // 내추럴 남성 (폴백)
 };
+
+// 여성 착장 이미지 풀 (4장 로테이션)
+const FEMALE_POOL = [
+  `${RAW_PEOPLE}/f_01.jpg`,
+  `${RAW_PEOPLE}/f_02.png`,
+  `${RAW_PEOPLE}/f_03.png`,
+  `${RAW_PEOPLE}/f_04.png`,
+  `${RAW_PEOPLE}/f_05.jpg`,
+  `${RAW_PEOPLE}/f_06.jpg`,
+  `${RAW_PEOPLE}/f_07.jpg`,
+  `${RAW_PEOPLE}/f_08.jpg`,
+];
+const MALE_POOL = [
+  `${RAW_PEOPLE}/m_01.png`,
+  `${RAW_PEOPLE}/m_02.png`,
+  `${RAW_PEOPLE}/m_03.png`,
+  `${RAW_PEOPLE}/m_04.png`,
+];
 
 function getCatKey(q){
   q = q.toLowerCase();
@@ -420,18 +448,25 @@ function getCatKey(q){
 function getFashionImg(q, i=0){
   const gender = curGender === 'male' ? 'male' : 'female';
   const cat = getCatKey(q);
-  return FASHION_IMG[`${gender}_${cat}`] || FASHION_IMG[`${gender}_classic`];
+  const key = `${gender}_${cat}`;
+  if(FASHION_IMG[key]) return FASHION_IMG[key];
+  // 풀에서 인덱스 기반 선택
+  const pool = gender === 'male' ? MALE_POOL : FEMALE_POOL;
+  return pool[Math.abs(i) % pool.length];
 }
 
-// 의상 카드 생성 (SVG 일러스트)
+// 의상 카드 생성 (실제 모델 사진)
 function makeOutfitCard(q, i, label){
   const imgSrc = getFashionImg(q, i);
   const div = document.createElement('div');
   div.className = 'outfit-img-wrap';
-  div.style.cssText = 'overflow:hidden;border-radius:13px;cursor:pointer;position:relative;background:#EEF4FF;';
+  div.style.cssText = 'overflow:hidden;border-radius:13px;cursor:pointer;position:relative;background:#f0f4ff;';
   div.onclick = () => openLightbox(imgSrc);
-  div.innerHTML = `<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;display:block;" alt="${label}"
-    onerror="this.parentElement.style.background='linear-gradient(145deg,#2A5EC8,#6A3DB8)';this.style.display='none'"/>
+  div.innerHTML = `
+    <img src="${imgSrc}"
+      style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;"
+      alt="${label}"
+      onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(145deg,#2A5EC8,#1a3d8f)';this.parentElement.innerHTML+='<div style=\'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:white;font-size:40px;\'>👗</div>'"/>
     <div class="outfit-label">${label}</div>
     <div class="zoom-badge">🔍</div>`;
   return div;
