@@ -671,81 +671,22 @@ function getCatKey(q) {
 // ── 의상 카드 생성 ──
 // 1단계: GitHub raw 이미지 즉시 표시
 // 2단계: 백그라운드에서 Pixabay/Unsplash 로딩 후 교체
-function makeOutfitCard(q, slotIdx, label) {
-  label = escHtml(label);
-  const cat = getCatKey(q);
-  _lastCat  = cat;
-  const g   = curGender==='male'?'male':'female';
-  const ghPool = g==='male' ? (GH_M[cat]||GH_M.classic) : (GH_F[cat]||GH_F.classic);
-  const ghSrc  = ghPool[Math.abs(slotIdx) % ghPool.length];
+// [중복 제거됨: makeOutfitCard]
 
-  const div = document.createElement('div');
-  div.className = 'outfit-img-wrap';
-
-  // ① GitHub raw 이미지 즉시 표시
-  div.innerHTML = `
-    <img id="card-img-${slotIdx}" src="${ghSrc}"
-      style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:opacity 0.4s;"
-      alt="${label}"
-      onerror="this.onerror=null;this.src='${ghSrc}'"/>
-    <div class="outfit-label">${label}</div>
-    <div class="zoom-badge">🔍</div>`;
-  div.onclick = () => openLightbox(ghSrc);
-
-  // ② 백그라운드: Pixabay/Unsplash 로딩 후 고화질로 교체
-  const pixQueries = PIX_Q[g][cat] || PIX_Q[g].classic;
-  const searchQ = pixQueries[Math.abs(slotIdx) % pixQueries.length];
-  const pageNum = Math.floor(Math.abs(slotIdx) / pixQueries.length) + 1;
-
-  (async () => {
-    let betterUrl = null;
-    const pixImgs = await fetchPixabay(searchQ, pageNum, g);
-    if(pixImgs.length > 0) betterUrl = pixImgs[Math.abs(slotIdx) % pixImgs.length];
-    if(!betterUrl) {
-      const unImgs = await fetchUnsplash(searchQ, pageNum);
-      if(unImgs.length > 0) betterUrl = unImgs[Math.abs(slotIdx) % unImgs.length];
-    }
-    if(betterUrl) {
-      const imgEl = div.querySelector(`#card-img-${slotIdx}`);
-      if(imgEl) {
-        imgEl.style.opacity = '0.3';
-        imgEl.onload = () => { imgEl.style.opacity = '1'; };
-        imgEl.onerror = () => { imgEl.src = ghSrc; imgEl.style.opacity = '1'; };
-        imgEl.src = betterUrl;
-        div.onclick = () => openLightbox(betterUrl);
-        // Pixabay 출처 뱃지
-        const srcBadge = div.querySelector('.src-badge');
-        if(srcBadge) srcBadge.textContent = betterUrl.includes('pixabay') ? '📷 Pixabay' : '📷 Unsplash';
-      }
-    }
-  })();
-
-  return div;
-}
 
 // ── 폴백 카드 (최후 수단) ──
-function fallbackCard(label, slotIdx=0) {
-  label = escHtml(label);
-  const g = curGender==='male'?'male':'female';
-  const pool = g==='male' ? GH_M.classic : GH_F.classic;
-  const src = pool[Math.abs(slotIdx) % pool.length];
-  return `<img src="${src}" style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;"
-    alt="${label}" onerror="this.onerror=null;"/>
-    <div class="outfit-label">${label}</div>`;
-}
+// [중복 제거됨: fallbackCard]
+
 
 // ── GitHub raw 이미지 반환 ──
-function getGitHubImg(slotIdx) {
-  const g = curGender==='male'?'male':'female';
-  const pool = g==='male' ? (GH_M[_lastCat]||GH_M.classic) : (GH_F[_lastCat]||GH_F.classic);
-  return pool[Math.abs(slotIdx) % pool.length];
-}
+// [중복 제거됨: getGitHubImg]
+
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function makeOutfitCard(q, slotIdx, label){
   label = escHtml(label);
   const cat = getCatKey(q);
   const gender = curGender==='male' ? 'male' : 'female';
-  const queries = PIXABAY_QUERIES[gender][cat] || PIXABAY_QUERIES[gender].classic;
+  const queries = PIX_Q[gender][cat] || PIX_Q[gender].classic;
   const searchQuery = queries[slotIdx % queries.length];
   const page = Math.floor(slotIdx / queries.length) + 1;
 
