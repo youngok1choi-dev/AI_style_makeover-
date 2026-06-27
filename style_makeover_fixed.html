@@ -543,103 +543,200 @@ const PIXABAY_KEY  = "56466557-19e7ccfcaf31ec7da47311764";
 const UNSPLASH_KEY = "8Kd_AfkS4AlNlgJs8VRn9qdxdL-JE2q6GxiS1jQFqiA";
 
 // ─── 스타일 × 성별 → Pixabay 검색어 ───
-// 성별 명확 분리: 여성은 woman/female, 남성은 man/male 키워드 고정
-const PIXABAY_QUERIES = {
+// ══════════════════════════════════════════════════════
+// 🖼️  이미지 시스템 - GitHub raw 1순위 + Pixabay 보조
+//     GitHub raw: 여성 19장 / 남성 8장 (100% 작동 보장)
+//     Pixabay: 브라우저에서 실시간 패션 사진 추가 로딩
+// ══════════════════════════════════════════════════════
+
+const GH = "https://raw.githubusercontent.com/youngok1choi-dev/AI_style_makeover/main/images/people";
+
+// ── 여성: 스타일별 큐레이션 이미지 ──
+const GH_F = {
+  classic:  [`${GH}/f_classic.jpg`, `${GH}/f_formal.jpg`,  `${GH}/f_01.jpg`,    `${GH}/f_05.jpg`],
+  formal:   [`${GH}/f_formal.jpg`,  `${GH}/f_classic.jpg`, `${GH}/f_06.jpg`,    `${GH}/f_02.png`],
+  chic:     [`${GH}/f_chic.png`,    `${GH}/f_extra5.jpg`,  `${GH}/f_03.png`,    `${GH}/f_extra6.jpeg`],
+  feminine: [`${GH}/f_feminine.png`,`${GH}/f_extra2.jpg`,  `${GH}/f_07.jpg`,    `${GH}/f_04.png`],
+  natural:  [`${GH}/f_natural.png`, `${GH}/f_extra3.jpg`,  `${GH}/f_extra4.jpg`,`${GH}/f_08.jpg`],
+};
+
+// ── 남성: 스타일별 큐레이션 이미지 ──
+const GH_M = {
+  classic:  [`${GH}/m_classic.png`, `${GH}/m_business.png`,`${GH}/m_01.png`,    `${GH}/m_02.png`],
+  business: [`${GH}/m_business.png`,`${GH}/m_classic.png`, `${GH}/m_02.png`,    `${GH}/m_smart.png`],
+  street:   [`${GH}/m_street.png`,  `${GH}/m_03.png`,      `${GH}/m_04.png`,    `${GH}/m_01.png`],
+  smart:    [`${GH}/m_smart.png`,   `${GH}/m_business.png`,`${GH}/m_03.png`,    `${GH}/m_04.png`],
+  natural:  [`${GH}/m_street.png`,  `${GH}/m_04.png`,      `${GH}/m_03.png`,    `${GH}/m_01.png`],
+};
+
+// ── Pixabay 보조 검색어 (브라우저에서 추가 이미지 로딩) ──
+const PIX_Q = {
   female: {
-    classic:  ["woman blazer suit","woman coat fashion","woman formal suit","woman business elegant"],
-    formal:   ["woman power suit office","woman business professional","woman work blazer","woman suit formal"],
-    chic:     ["woman minimalist fashion","woman silk outfit chic","woman turtleneck style","woman sleek look"],
-    feminine: ["woman midi dress","woman dress elegant","woman floral dress","woman feminine fashion"],
-    natural:  ["woman linen outfit","woman casual fashion","woman earth tone style","woman relaxed look"],
+    classic:  ["woman blazer coat fashion","woman formal suit elegant","woman classic style"],
+    formal:   ["woman business suit","woman power suit office","woman professional outfit"],
+    chic:     ["woman minimalist fashion","woman chic style","woman silk outfit"],
+    feminine: ["woman midi dress fashion","woman elegant dress","woman feminine style"],
+    natural:  ["woman casual linen","woman natural fashion","woman relaxed outfit"],
   },
   male: {
-    classic:  ["man suit classic","man formal suit","man blazer elegant","man navy suit"],
-    business: ["man business suit","man office suit","man power suit professional","man work formal"],
-    street:   ["man street fashion","man urban casual","man street style","man casual look"],
-    smart:    ["man smart casual","man chino blazer","man business casual","man polo shirt smart"],
-    natural:  ["man linen casual","man earth tone","man relaxed style","man outdoor casual"],
+    classic:  ["man suit fashion","man formal blazer","man classic style"],
+    business: ["man business suit","man office formal","man professional suit"],
+    street:   ["man street fashion","man urban casual","man street style"],
+    smart:    ["man smart casual","man chino outfit","man business casual"],
+    natural:  ["man casual linen","man relaxed fashion","man outdoor style"],
   }
 };
 
-// 성별 검증 키워드 (Pixabay 결과 필터링용)
-const GENDER_WORDS = {
-  female: ['woman','women','female','girl','lady','her'],
-  male:   ['man','men','male','guy','gentleman','his']
+// 성별 태그 필터 (반대 성별 제외)
+const OPP_TAGS = {
+  female: ['man ','men ','male ',' guy',' boy',' gentleman'],
+  male:   ['woman ','women ','female ',' girl',' lady']
 };
 
-// ─── 이미지 캐시 (중복 API 호출 방지) ───
 const imgCache = {};
 
-// ─── Pixabay API 호출 (성별 필터 포함) ───
-async function fetchPixabay(query, page=1, gender=null){
-  const g = gender || (curGender==='male' ? 'male' : 'female');
-  const key = `${g}_${query}_p${page}`;
-  if(imgCache[key]) return imgCache[key];
+// ── GitHub raw 이미지 즉시 반환 (동기) ──
+function getGHImg(slotIdx) {
+  const g   = curGender === 'male' ? 'male' : 'female';
+  const cat = _lastCat || 'classic';
+  const pool = g === 'male' ? (GH_M[cat]||GH_M.classic) : (GH_F[cat]||GH_F.classic);
+  return pool[Math.abs(slotIdx) % pool.length];
+}
+let _lastCat = 'classic';
+
+// ── Pixabay 비동기 (추가 이미지, 보조) ──
+async function fetchPixabay(query, page=1, gender=null) {
+  const g = gender || (curGender==='male'?'male':'female');
+  const cacheKey = `pix_${g}_${query}_p${page}`;
+  if(imgCache[cacheKey]) return imgCache[cacheKey];
   try {
     const url = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${encodeURIComponent(query)}&image_type=photo&per_page=20&page=${page}&safesearch=true&orientation=vertical&min_width=400`;
     const r = await fetch(url);
     const d = await r.json();
-    const hits = d.hits||[];
-    if(hits.length > 0){
-      // 성별 키워드로 필터링 - 반대 성별 태그가 있는 이미지 제외
-      const gWords = GENDER_WORDS[g];
-      const oppWords = GENDER_WORDS[g==='male'?'female':'male'];
-      const filtered = hits.filter(h=>{
-        const tags = (h.tags||'').toLowerCase();
-        const hasOpp = oppWords.some(w => tags.includes(w));
-        if(hasOpp) return false; // 반대 성별 태그 제외
-        return true;
-      });
-      const pool = (filtered.length > 0 ? filtered : hits)
-        .map(h => h.webformatURL || h.largeImageURL);
-      imgCache[key] = pool;
+    const hits = (d.hits||[]).filter(h => {
+      const tags = ' ' + (h.tags||'').toLowerCase() + ' ';
+      return !OPP_TAGS[g].some(w => tags.includes(w));
+    });
+    if(hits.length > 0) {
+      const pool = hits.map(h => h.webformatURL || h.largeImageURL);
+      imgCache[cacheKey] = pool;
       return pool;
     }
-  } catch(e){ console.warn('Pixabay error:', e); }
+  } catch(e) { console.warn('Pixabay:', e); }
   return [];
 }
 
-// ─── Unsplash API 호출 (폴백용, 성별 포함) ───
-async function fetchUnsplash(query, page=1){
-  const g = curGender==='male' ? 'male' : 'female';
-  const key = `unsplash_${g}_${query}_${page}`;
-  if(imgCache[key]) return imgCache[key];
+// ── Unsplash 비동기 (2차 보조) ──
+async function fetchUnsplash(query, page=1) {
+  const g = curGender==='male'?'male':'female';
+  const cacheKey = `unsp_${g}_${query}_p${page}`;
+  if(imgCache[cacheKey]) return imgCache[cacheKey];
   try {
-    // 검색어에 성별 접두어 추가
     const gPrefix = g==='male' ? 'man ' : 'woman ';
-    const q = query.startsWith('man ') || query.startsWith('woman ') ? query : gPrefix + query;
+    const q = /^(man|woman) /.test(query) ? query : gPrefix + query;
     const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=10&page=${page}&orientation=portrait&client_id=${UNSPLASH_KEY}`;
     const r = await fetch(url);
     const d = await r.json();
-    const results = d.results||[];
-    if(results.length > 0){
+    const results = (d.results||[]);
+    if(results.length > 0) {
       const pool = results.map(p => p.urls.regular + '&w=600&h=800&fit=crop&crop=faces,center');
-      imgCache[key] = pool;
+      imgCache[cacheKey] = pool;
       return pool;
     }
-  } catch(e){ console.warn('Unsplash error:', e); }
+  } catch(e) { console.warn('Unsplash:', e); }
   return [];
 }
 
-// ─── 스타일에 맞는 검색어 선택 ───
-function getCatKey(q){
+// ── 스타일 카테고리 분류 ──
+function getCatKey(q) {
   q = q.toLowerCase();
-  if(curGender==='male'){
+  if(curGender==='male') {
     if(q.includes('classic')||q.includes('navy suit')||q.includes('tweed')) return 'classic';
     if(q.includes('business')||q.includes('professional')||q.includes('formal')) return 'business';
-    if(q.includes('street')||q.includes('urban')||q.includes('casual cool')) return 'street';
+    if(q.includes('street')||q.includes('urban')) return 'street';
     if(q.includes('smart')||q.includes('polo')||q.includes('chino')) return 'smart';
     return 'natural';
   } else {
     if(q.includes('blazer')||q.includes('wool coat')||q.includes('tweed')||q.includes('turtleneck')) return 'classic';
     if(q.includes('formal')||q.includes('suit')||q.includes('power')||q.includes('office')) return 'formal';
-    if(q.includes('chic')||q.includes('minimalist')||q.includes('silk')||q.includes('sleek')) return 'chic';
+    if(q.includes('chic')||q.includes('minimalist')||q.includes('silk')) return 'chic';
     if(q.includes('dress')||q.includes('feminine')||q.includes('floral')||q.includes('rose')) return 'feminine';
     return 'natural';
   }
 }
 
-// ─── 의상 카드 생성 (비동기 이미지 로딩) ───
+// ── 의상 카드 생성 ──
+// 1단계: GitHub raw 이미지 즉시 표시
+// 2단계: 백그라운드에서 Pixabay/Unsplash 로딩 후 교체
+function makeOutfitCard(q, slotIdx, label) {
+  label = escHtml(label);
+  const cat = getCatKey(q);
+  _lastCat  = cat;
+  const g   = curGender==='male'?'male':'female';
+  const ghPool = g==='male' ? (GH_M[cat]||GH_M.classic) : (GH_F[cat]||GH_F.classic);
+  const ghSrc  = ghPool[Math.abs(slotIdx) % ghPool.length];
+
+  const div = document.createElement('div');
+  div.className = 'outfit-img-wrap';
+
+  // ① GitHub raw 이미지 즉시 표시
+  div.innerHTML = `
+    <img id="card-img-${slotIdx}" src="${ghSrc}"
+      style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:opacity 0.4s;"
+      alt="${label}"
+      onerror="this.onerror=null;this.src='${ghSrc}'"/>
+    <div class="outfit-label">${label}</div>
+    <div class="zoom-badge">🔍</div>`;
+  div.onclick = () => openLightbox(ghSrc);
+
+  // ② 백그라운드: Pixabay/Unsplash 로딩 후 고화질로 교체
+  const pixQueries = PIX_Q[g][cat] || PIX_Q[g].classic;
+  const searchQ = pixQueries[Math.abs(slotIdx) % pixQueries.length];
+  const pageNum = Math.floor(Math.abs(slotIdx) / pixQueries.length) + 1;
+
+  (async () => {
+    let betterUrl = null;
+    const pixImgs = await fetchPixabay(searchQ, pageNum, g);
+    if(pixImgs.length > 0) betterUrl = pixImgs[Math.abs(slotIdx) % pixImgs.length];
+    if(!betterUrl) {
+      const unImgs = await fetchUnsplash(searchQ, pageNum);
+      if(unImgs.length > 0) betterUrl = unImgs[Math.abs(slotIdx) % unImgs.length];
+    }
+    if(betterUrl) {
+      const imgEl = div.querySelector(`#card-img-${slotIdx}`);
+      if(imgEl) {
+        imgEl.style.opacity = '0.3';
+        imgEl.onload = () => { imgEl.style.opacity = '1'; };
+        imgEl.onerror = () => { imgEl.src = ghSrc; imgEl.style.opacity = '1'; };
+        imgEl.src = betterUrl;
+        div.onclick = () => openLightbox(betterUrl);
+        // Pixabay 출처 뱃지
+        const srcBadge = div.querySelector('.src-badge');
+        if(srcBadge) srcBadge.textContent = betterUrl.includes('pixabay') ? '📷 Pixabay' : '📷 Unsplash';
+      }
+    }
+  })();
+
+  return div;
+}
+
+// ── 폴백 카드 (최후 수단) ──
+function fallbackCard(label, slotIdx=0) {
+  label = escHtml(label);
+  const g = curGender==='male'?'male':'female';
+  const pool = g==='male' ? GH_M.classic : GH_F.classic;
+  const src = pool[Math.abs(slotIdx) % pool.length];
+  return `<img src="${src}" style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;"
+    alt="${label}" onerror="this.onerror=null;"/>
+    <div class="outfit-label">${label}</div>`;
+}
+
+// ── GitHub raw 이미지 반환 ──
+function getGitHubImg(slotIdx) {
+  const g = curGender==='male'?'male':'female';
+  const pool = g==='male' ? (GH_M[_lastCat]||GH_M.classic) : (GH_F[_lastCat]||GH_F.classic);
+  return pool[Math.abs(slotIdx) % pool.length];
+}
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function makeOutfitCard(q, slotIdx, label){
   label = escHtml(label);
@@ -922,46 +1019,50 @@ function buildResult(){
   });
   document.getElementById('daily-rows').innerHTML=dailyHtml;
 
-  // After img: Pixabay 실제 패션 사진 (비동기 컨테이너 방식)
-  const afterQuery  = oq ? oq[0] : (curGender==='male'?'men classic suit':'women elegant coat');
-  const afterCat    = getCatKey(afterQuery);
+  // After img: GitHub raw 즉시 표시 → Pixabay/Unsplash로 교체 시도
+  const afterCat    = getCatKey(oq ? oq[0] : '');
   const afterGender = curGender==='male'?'male':'female';
-  const afterQueries= PIXABAY_QUERIES[afterGender][afterCat]||PIXABAY_QUERIES[afterGender].classic;
-  const afterWrap   = document.getElementById('after-img-wrap');
-  const afterInner  = document.getElementById('after-img-inner');
-  const afterZoom   = document.getElementById('after-zoom');
+  _lastCat = afterCat;
 
+  const afterWrap  = document.getElementById('after-img-wrap');
+  const afterInner = document.getElementById('after-img-inner');
+  const afterZoom  = document.getElementById('after-zoom');
   document.getElementById('after-label').textContent = si.name;
 
-  // 로딩 스피너 표시
-  afterInner.innerHTML = '<div style="width:32px;height:32px;border:3px solid #2A5EC8;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></div><span style="color:#2A5EC8;font-size:11px;font-weight:600;">스타일 로딩중...</span>';
-  afterWrap.style.cursor = 'default';
-  afterZoom.style.display = 'none';
+  // ① GitHub raw 이미지 즉시 표시
+  const ghAfterPool = afterGender==='male' ? (GH_M[afterCat]||GH_M.classic) : (GH_F[afterCat]||GH_F.classic);
+  const ghAfterSrc  = ghAfterPool[1] || ghAfterPool[0];
+  afterImgUrl = ghAfterSrc;
 
+  afterInner.innerHTML = `<img src="${ghAfterSrc}"
+    style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;border-radius:13px;transition:opacity 0.4s;"
+    id="after-main-img" alt="${si.name}"
+    onerror="this.onerror=null;"/>`;
+  afterWrap.style.cursor = 'pointer';
+  afterWrap.onclick = () => openLightbox(afterImgUrl);
+  afterZoom.style.display = 'block';
+
+  // ② 백그라운드: Pixabay/Unsplash 고화질로 교체 시도
+  const pixQAfter = PIX_Q[afterGender][afterCat] || PIX_Q[afterGender].classic;
   (async ()=>{
-    let url = null;
-    // 1차: Pixabay (여러 쿼리 시도)
-    for(let qi=0; qi<afterQueries.length && !url; qi++){
-      const imgs = await fetchPixabay(afterQueries[qi], qi+1, afterGender);
-      if(imgs.length > 0) url = imgs[qi % imgs.length];
+    let betterUrl = null;
+    const pixImgs = await fetchPixabay(pixQAfter[0], 2, afterGender);
+    if(pixImgs.length > 0) betterUrl = pixImgs[1] || pixImgs[0];
+    if(!betterUrl){
+      const uImgs = await fetchUnsplash(pixQAfter[0], 1);
+      if(uImgs.length > 0) betterUrl = uImgs[0];
     }
-    // 2차 폴백: Unsplash
-    if(!url){
-      const uImgs = await fetchUnsplash(afterQueries[0], 1);
-      if(uImgs.length > 0) url = uImgs[0];
+    if(betterUrl){
+      const imgEl = document.getElementById('after-main-img');
+      if(imgEl){
+        imgEl.style.opacity = '0.3';
+        imgEl.onload = () => { imgEl.style.opacity='1'; };
+        imgEl.onerror = () => { imgEl.src=ghAfterSrc; imgEl.style.opacity='1'; };
+        imgEl.src = betterUrl;
+        afterImgUrl = betterUrl;
+        afterWrap.onclick = () => openLightbox(afterImgUrl);
+      }
     }
-    // 3차 폴백: GitHub raw 실착 사진
-    if(!url){ url = getGitHubImg(0); }
-
-    afterImgUrl = url;
-    const fallbackSrc = getGitHubImg(0);
-    afterInner.innerHTML = `<img src="${url}"
-      style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;border-radius:13px;"
-      alt="${si.name}"
-      onerror="this.onerror=null;this.src='${fallbackSrc}'"/>`;
-    afterWrap.style.cursor = 'pointer';
-    afterWrap.onclick = () => openLightbox(afterImgUrl);
-    afterZoom.style.display = 'block';
   })();
 
   // 변신 후 스타일 룩: SVG 패션 일러스트
