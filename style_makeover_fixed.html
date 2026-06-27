@@ -543,38 +543,55 @@ const PIXABAY_KEY  = "56466557-19e7ccfcaf31ec7da47311764";
 const UNSPLASH_KEY = "8Kd_AfkS4AlNlgJs8VRn9qdxdL-JE2q6GxiS1jQFqiA";
 
 // ─── 스타일 × 성별 → Pixabay 검색어 ───
+// 성별 명확 분리: 여성은 woman/female, 남성은 man/male 키워드 고정
 const PIXABAY_QUERIES = {
   female: {
-    classic:  ["women blazer suit elegant","women classic coat fashion","women formal blazer"],
-    formal:   ["women business suit office","women power suit professional","women work outfit elegant"],
-    chic:     ["women minimalist fashion chic","women silk blouse chic","women turtleneck minimal"],
-    feminine: ["women midi dress floral","women dress elegant feminine","women lace dress fashion"],
-    natural:  ["women linen casual outfit","women boho fashion natural","women earth tone casual"],
+    classic:  ["woman blazer suit","woman coat fashion","woman formal suit","woman business elegant"],
+    formal:   ["woman power suit office","woman business professional","woman work blazer","woman suit formal"],
+    chic:     ["woman minimalist fashion","woman silk outfit chic","woman turtleneck style","woman sleek look"],
+    feminine: ["woman midi dress","woman dress elegant","woman floral dress","woman feminine fashion"],
+    natural:  ["woman linen outfit","woman casual fashion","woman earth tone style","woman relaxed look"],
   },
   male: {
-    classic:  ["men suit classic fashion","men formal suit elegant","men navy blazer suit"],
-    business: ["men business suit professional","men office suit formal","men power suit"],
-    street:   ["men street style fashion","men casual urban outfit","men hoodie street"],
-    smart:    ["men smart casual fashion","men chino blazer","men business casual outfit"],
-    natural:  ["men linen casual fashion","men earth tone outfit","men relaxed casual style"],
+    classic:  ["man suit classic","man formal suit","man blazer elegant","man navy suit"],
+    business: ["man business suit","man office suit","man power suit professional","man work formal"],
+    street:   ["man street fashion","man urban casual","man street style","man casual look"],
+    smart:    ["man smart casual","man chino blazer","man business casual","man polo shirt smart"],
+    natural:  ["man linen casual","man earth tone","man relaxed style","man outdoor casual"],
   }
+};
+
+// 성별 검증 키워드 (Pixabay 결과 필터링용)
+const GENDER_WORDS = {
+  female: ['woman','women','female','girl','lady','her'],
+  male:   ['man','men','male','guy','gentleman','his']
 };
 
 // ─── 이미지 캐시 (중복 API 호출 방지) ───
 const imgCache = {};
 
-// ─── Pixabay API 호출 ───
-async function fetchPixabay(query, page=1){
-  const key = `${query}_p${page}`;
+// ─── Pixabay API 호출 (성별 필터 포함) ───
+async function fetchPixabay(query, page=1, gender=null){
+  const g = gender || (curGender==='male' ? 'male' : 'female');
+  const key = `${g}_${query}_p${page}`;
   if(imgCache[key]) return imgCache[key];
   try {
-    const url = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${encodeURIComponent(query)}&image_type=photo&per_page=15&page=${page}&safesearch=true&orientation=vertical&min_width=400`;
+    const url = `https://pixabay.com/api/?key=${PIXABAY_KEY}&q=${encodeURIComponent(query)}&image_type=photo&per_page=20&page=${page}&safesearch=true&orientation=vertical&min_width=400`;
     const r = await fetch(url);
     const d = await r.json();
     const hits = d.hits||[];
     if(hits.length > 0){
-      // 해상도 높은 이미지 선택
-      const pool = hits.map(h => h.webformatURL || h.largeImageURL);
+      // 성별 키워드로 필터링 - 반대 성별 태그가 있는 이미지 제외
+      const gWords = GENDER_WORDS[g];
+      const oppWords = GENDER_WORDS[g==='male'?'female':'male'];
+      const filtered = hits.filter(h=>{
+        const tags = (h.tags||'').toLowerCase();
+        const hasOpp = oppWords.some(w => tags.includes(w));
+        if(hasOpp) return false; // 반대 성별 태그 제외
+        return true;
+      });
+      const pool = (filtered.length > 0 ? filtered : hits)
+        .map(h => h.webformatURL || h.largeImageURL);
       imgCache[key] = pool;
       return pool;
     }
@@ -582,12 +599,16 @@ async function fetchPixabay(query, page=1){
   return [];
 }
 
-// ─── Unsplash API 호출 (폴백용) ───
+// ─── Unsplash API 호출 (폴백용, 성별 포함) ───
 async function fetchUnsplash(query, page=1){
-  const key = `unsplash_${query}_${page}`;
+  const g = curGender==='male' ? 'male' : 'female';
+  const key = `unsplash_${g}_${query}_${page}`;
   if(imgCache[key]) return imgCache[key];
   try {
-    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=10&page=${page}&orientation=portrait&client_id=${UNSPLASH_KEY}`;
+    // 검색어에 성별 접두어 추가
+    const gPrefix = g==='male' ? 'man ' : 'woman ';
+    const q = query.startsWith('man ') || query.startsWith('woman ') ? query : gPrefix + query;
+    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=10&page=${page}&orientation=portrait&client_id=${UNSPLASH_KEY}`;
     const r = await fetch(url);
     const d = await r.json();
     const results = d.results||[];
@@ -643,8 +664,8 @@ function makeOutfitCard(q, slotIdx, label){
   (async ()=>{
     let imgUrl = null;
 
-    // 1차: Pixabay
-    const pixImgs = await fetchPixabay(searchQuery, page);
+    // 1차: Pixabay (성별 파라미터 명시 전달)
+    const pixImgs = await fetchPixabay(searchQuery, page, gender);
     if(pixImgs.length > 0){
       imgUrl = pixImgs[slotIdx % pixImgs.length];
     }
@@ -921,7 +942,7 @@ function buildResult(){
     let url = null;
     // 1차: Pixabay (여러 쿼리 시도)
     for(let qi=0; qi<afterQueries.length && !url; qi++){
-      const imgs = await fetchPixabay(afterQueries[qi], qi+1);
+      const imgs = await fetchPixabay(afterQueries[qi], qi+1, afterGender);
       if(imgs.length > 0) url = imgs[qi % imgs.length];
     }
     // 2차 폴백: Unsplash
