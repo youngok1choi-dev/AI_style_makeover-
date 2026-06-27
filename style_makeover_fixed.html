@@ -351,23 +351,11 @@
   </div>
 </div>
 
-<!-- LOADING -->
+<!-- LOADING (거의 표시 안 됨 - 즉시 결과로 이동) -->
 <div id="page-loading" class="page">
-  <div style="text-align:center;padding:20px;">
-    <div style="width:56px;height:56px;border:4px solid rgba(42,94,200,0.15);border-top:4px solid #2A5EC8;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px;"></div>
-    <p style="color:#0A1E42;font-size:18px;font-weight:700;">스타일 분석 중...</p>
-    <p style="color:#8098C0;font-size:13px;margin-top:8px;" id="loading-msg">퍼스널 컬러와 체형을 분석하고 있어요</p>
-    <div style="margin-top:20px;display:flex;flex-direction:column;gap:8px;max-width:260px;margin-left:auto;margin-right:auto;">
-      <div id="load-step1" style="display:flex;align-items:center;gap:8px;font-size:12px;color:#8098C0;">
-        <span id="s1-icon">⏳</span> 스타일 타입 분석 중...
-      </div>
-      <div id="load-step2" style="display:flex;align-items:center;gap:8px;font-size:12px;color:#8098C0;">
-        <span id="s2-icon">⏳</span> AI 코멘트 생성 중...
-      </div>
-      <div id="load-step3" style="display:flex;align-items:center;gap:8px;font-size:12px;color:#8098C0;">
-        <span id="s3-icon">⏳</span> 코디 추천 준비 중...
-      </div>
-    </div>
+  <div style="text-align:center;">
+    <div style="width:48px;height:48px;border:4px solid rgba(42,94,200,0.15);border-top:4px solid #2A5EC8;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 16px;"></div>
+    <p style="color:#0A1E42;font-size:16px;font-weight:700;">분석 중...</p>
   </div>
 </div>
 
@@ -957,29 +945,23 @@ function handlePhoto2(e){
   r.readAsDataURL(f);
 }
 async function finalize(){
-  showPage('page-loading');
-  // 로딩 스텝 UI 업데이트
-  const setStep = (n, done) => {
-    const el = document.getElementById(`s${n}-icon`);
-    if(el) el.textContent = done ? '✅' : '⏳';
-  };
-  setTimeout(()=>setStep(1,true), 300);
-  setTimeout(()=>setStep(2,false), 300);
-  // ① 로컬 코멘트 즉시 생성 (API 없이 항상 작동)
+  // ① 로컬 코멘트 즉시 생성
   aiComment = buildLocalComment();
-  // ② Claude API 시도 (8초 timeout, 실패해도 무관)
+  // ② 결과 화면 즉시 표시 (대기 없음)
+  buildResult();
+  showPage('page-result');
+  // ③ 백그라운드에서 AI 코멘트 교체 시도 (결과 화면 이미 표시된 상태)
   try {
     const apiResult = await Promise.race([
       fetchAI(),
-      new Promise((_,rej)=>setTimeout(()=>rej('timeout'),8000))
+      new Promise((_,rej)=>setTimeout(()=>rej('timeout'),6000))
     ]);
-    if(apiResult) aiComment = apiResult;
-  } catch(e){ /* 로컬 코멘트 사용 */ }
-  setStep(2,true); setStep(3,false);
-  await new Promise(r=>setTimeout(r,200));
-  buildResult();
-  setStep(3,true);
-  showPage('page-result');
+    if(apiResult){
+      aiComment = apiResult;
+      const el = document.getElementById('res-comment');
+      if(el) el.textContent = apiResult;
+    }
+  } catch(e){ /* 로컬 코멘트 유지 */ }
 }
 
 // 로컬 스타일 코멘트 (API 없이 즉시 생성)
